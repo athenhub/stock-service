@@ -24,8 +24,17 @@ public enum StockEventType {
   OUTBOUND,
 
   /** 주문 취소. */
-  CANCEL,
+  CANCEL;
 
-  /** 반품. */
-  RETURN
+  public boolean isInbound() {
+    return this == INBOUND;
+  }
+
+  public boolean isOutbound() {
+    return this == OUTBOUND;
+  }
+
+  public boolean isCancel() {
+    return this == CANCEL;
+  }
 }
