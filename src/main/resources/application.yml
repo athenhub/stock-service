@@ -21,3 +21,9 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: ${EUREKA_SERVICE_URL}
+
+rabbit:
+  stock:
+    exchange: stock.exchange
+    queue: stock.queue
+    routing-key: stock.*

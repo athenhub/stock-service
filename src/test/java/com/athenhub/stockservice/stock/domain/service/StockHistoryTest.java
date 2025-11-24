@@ -33,7 +33,7 @@ class StockHistoryTest {
 
     // when
     StockHistory history =
-        StockHistory.of(changedQuantity, stockId, productId, variantId, eventType);
+        StockHistory.create(changedQuantity, stockId, productId, variantId, eventType);
 
     // then
     assertThat(history.getId()).isNotNull();

@@ -25,7 +25,7 @@ public class StockHistoryFixture {
    * @return StockHistory
    */
   public static StockHistory createStockHistory(int changedQuantity, StockEventType eventType) {
-    return StockHistory.of(
+    return StockHistory.create(
         changedQuantity,
         StockId.of(UUID.randomUUID()),
         ProductId.of(UUID.randomUUID()),

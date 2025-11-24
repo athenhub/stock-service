@@ -91,7 +91,7 @@ public class StockHistory extends AbstractTimeEntity {
    * @param eventType 재고 변동 이벤트 유형
    * @return 생성된 StockHistory 객체
    */
-  public static StockHistory of(
+  public static StockHistory create(
       int changedQuantity,
       StockId stockId,
       ProductId productId,
