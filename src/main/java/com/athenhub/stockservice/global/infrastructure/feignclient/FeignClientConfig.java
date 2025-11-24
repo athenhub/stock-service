@@ -1,4 +1,4 @@
-package com.athenhub.stockservice.stock.infrastructure.config;
+package com.athenhub.stockservice.global.infrastructure.feignclient;
 
 import feign.RequestInterceptor;
 import jakarta.servlet.http.HttpServletRequest;

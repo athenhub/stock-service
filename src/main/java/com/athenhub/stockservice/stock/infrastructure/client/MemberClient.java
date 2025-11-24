@@ -1,6 +1,6 @@
 package com.athenhub.stockservice.stock.infrastructure.client;
 
-import com.athenhub.stockservice.stock.infrastructure.config.FeignClientConfig;
+import com.athenhub.stockservice.global.infrastructure.feignclient.FeignClientConfig;
 import com.athenhub.stockservice.stock.infrastructure.dto.MemberInfo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
