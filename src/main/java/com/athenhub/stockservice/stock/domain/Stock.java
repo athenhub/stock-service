@@ -1,5 +1,7 @@
 package com.athenhub.stockservice.stock.domain;
 
+import static com.athenhub.stockservice.stock.domain.exception.PermissionErrorCode.REGISTER_NOT_ALLOWED;
+
 import com.athenhub.stockservice.global.domain.AbstractTimeEntity;
 import com.athenhub.stockservice.stock.domain.dto.AccessContext;
 import com.athenhub.stockservice.stock.domain.dto.RegisterRequest;
@@ -10,13 +12,10 @@ import com.athenhub.stockservice.stock.domain.vo.ProductId;
 import com.athenhub.stockservice.stock.domain.vo.ProductVariantId;
 import com.athenhub.stockservice.stock.domain.vo.StockId;
 import jakarta.persistence.*;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.Objects;
-
-import static com.athenhub.stockservice.stock.domain.exception.PermissionErrorCode.REGISTER_NOT_ALLOWED;
 
 /**
  * 상품 재고(Stock)를 나타내는 도메인 엔티티.
@@ -75,22 +74,21 @@ public class Stock extends AbstractTimeEntity {
    * @return 생성된 Stock 객체
    */
   public static Stock of(
-          RegisterRequest request,
-          AccessContext context,
-          BelongsToValidator belongsToValidator,
-          ProductAccessPermissionChecker permissionChecker
-  ) {
-      if (!belongsToValidator.belongsTo(context)) {
-          throw new StockDomainException(REGISTER_NOT_ALLOWED, "현재 사용자는 해당 허브/벤더에 소속되어 있지 않습니다.");
-      }
-      if (!permissionChecker.canAccess(context, request.productId())) {
-          throw new StockDomainException(REGISTER_NOT_ALLOWED, "해당 상품에 대한 재고 등록 권한이 없습니다.");
-      }
+      RegisterRequest request,
+      AccessContext context,
+      BelongsToValidator belongsToValidator,
+      ProductAccessPermissionChecker permissionChecker) {
+    if (!belongsToValidator.belongsTo(context)) {
+      throw new StockDomainException(REGISTER_NOT_ALLOWED, "현재 사용자는 해당 허브/벤더에 소속되어 있지 않습니다.");
+    }
+    if (!permissionChecker.canAccess(context, request.productId())) {
+      throw new StockDomainException(REGISTER_NOT_ALLOWED, "해당 상품에 대한 재고 등록 권한이 없습니다.");
+    }
 
-      return new Stock(
-              request.quantity(),
-              ProductId.of(Objects.requireNonNull(request.productId())),
-              ProductVariantId.of(Objects.requireNonNull(request.variantId())));
+    return new Stock(
+        request.quantity(),
+        ProductId.of(Objects.requireNonNull(request.productId())),
+        ProductVariantId.of(Objects.requireNonNull(request.variantId())));
   }
 
   /**

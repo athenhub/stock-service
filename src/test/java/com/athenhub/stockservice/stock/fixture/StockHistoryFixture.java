@@ -5,7 +5,6 @@ import com.athenhub.stockservice.stock.domain.StockHistory;
 import com.athenhub.stockservice.stock.domain.vo.ProductId;
 import com.athenhub.stockservice.stock.domain.vo.ProductVariantId;
 import com.athenhub.stockservice.stock.domain.vo.StockId;
-
 import java.util.UUID;
 
 /**

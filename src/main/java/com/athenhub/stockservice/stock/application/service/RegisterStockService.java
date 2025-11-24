@@ -15,12 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class RegisterStockService {
 
-    private final ProductAccessPermissionChecker checker;
-    private final BelongsToValidator belongs;
+  private final ProductAccessPermissionChecker checker;
+  private final BelongsToValidator belongs;
 
-    RegisterResponse register(RegisterRequest request, AccessContext accessContext) {
-        Stock stock = Stock.of(request, accessContext, belongs, checker);
-        // TODO: 이벤트 멀티 캐스팅(내부, 외부 모두 사용)
-        return new RegisterResponse(stock.getId().toUuid());
-    }
+  RegisterResponse register(RegisterRequest request, AccessContext accessContext) {
+    Stock stock = Stock.of(request, accessContext, belongs, checker);
+    // TODO: 이벤트 멀티 캐스팅(내부, 외부 모두 사용)
+    return new RegisterResponse(stock.getId().toUuid());
+  }
 }
