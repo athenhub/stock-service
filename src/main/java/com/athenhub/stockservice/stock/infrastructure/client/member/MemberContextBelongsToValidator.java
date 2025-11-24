@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class MemberContextBelongsToValidator implements BelongsToValidator {
 
-  /** 외부 Member 서비스 호출을 위한 Feign Client */
+  /** 외부 Member 서비스 호출을 위한 Feign Client. */
   private final MemberClient memberClient;
 
   /**

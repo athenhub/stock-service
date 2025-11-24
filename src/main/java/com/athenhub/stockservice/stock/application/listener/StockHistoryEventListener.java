@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class StockHistoryEventListener {
 
-  /** 재고 이력을 저장하기 위한 레포지토리 */
+  /** 재고 이력을 저장하기 위한 레포지토리. */
   private final StockHistoryRepository stockHistoryRepository;
 
   /**

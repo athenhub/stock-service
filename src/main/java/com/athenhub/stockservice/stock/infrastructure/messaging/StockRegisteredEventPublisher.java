@@ -39,10 +39,10 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @EnableConfigurationProperties(RabbitStockProperties.class)
 public class StockRegisteredEventPublisher {
 
-  /** RabbitMQ 메시지를 전송하기 위한 템플릿 */
+  /** RabbitMQ 메시지를 전송하기 위한 템플릿. */
   private final RabbitTemplate rabbitTemplate;
 
-  /** stock 관련 exchange, routingKey 등의 설정 정보 */
+  /** stock 관련 exchange, routingKey 등의 설정 정보. */
   private final RabbitStockProperties stockProperties;
 
   /**

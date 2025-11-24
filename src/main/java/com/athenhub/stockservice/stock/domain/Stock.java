@@ -11,7 +11,11 @@ import com.athenhub.stockservice.stock.domain.service.ProductAccessPermissionVal
 import com.athenhub.stockservice.stock.domain.vo.ProductId;
 import com.athenhub.stockservice.stock.domain.vo.ProductVariantId;
 import com.athenhub.stockservice.stock.domain.vo.StockId;
-import jakarta.persistence.*;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
