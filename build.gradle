@@ -88,6 +88,9 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+    // open feign
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
     // mockito javaagent
     mockitoAgent('org.mockito:mockito-core') {
         transitive = false
