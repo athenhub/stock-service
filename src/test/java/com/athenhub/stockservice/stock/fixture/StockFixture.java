@@ -4,7 +4,7 @@ import com.athenhub.stockservice.stock.domain.Stock;
 import com.athenhub.stockservice.stock.domain.dto.AccessContext;
 import com.athenhub.stockservice.stock.domain.dto.RegisterRequest;
 import com.athenhub.stockservice.stock.domain.service.BelongsToValidator;
-import com.athenhub.stockservice.stock.domain.service.ProductAccessPermissionChecker;
+import com.athenhub.stockservice.stock.domain.service.ProductAccessPermissionValidator;
 import java.util.UUID;
 
 /**
@@ -69,7 +69,7 @@ public final class StockFixture {
    *
    * <p>상품 접근 권한이 항상 허용된 상태를 가정한다.
    */
-  public static ProductAccessPermissionChecker alwaysAllowed() {
+  public static ProductAccessPermissionValidator alwaysAllowed() {
     return (context, productId) -> true;
   }
 
@@ -78,7 +78,7 @@ public final class StockFixture {
    *
    * <p>상품 접근 권한이 항상 거부된 상태를 가정한다.
    */
-  public static ProductAccessPermissionChecker neverAllowed() {
+  public static ProductAccessPermissionValidator neverAllowed() {
     return (context, productId) -> false;
   }
 

@@ -1,7 +1,7 @@
 package com.athenhub.stockservice.stock.infrastructure;
 
 import com.athenhub.stockservice.stock.domain.dto.AccessContext;
-import com.athenhub.stockservice.stock.domain.service.ProductAccessPermissionChecker;
+import com.athenhub.stockservice.stock.domain.service.ProductAccessPermissionValidator;
 import com.athenhub.stockservice.stock.infrastructure.client.ProductClient;
 import com.athenhub.stockservice.stock.infrastructure.client.ProductDetail;
 import java.util.Objects;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class DefaultProductAccessPermissionChecker implements ProductAccessPermissionChecker {
+public class DefaultProductAccessPermissionValidator implements ProductAccessPermissionValidator {
 
   private final ProductClient productClient;
 

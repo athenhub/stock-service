@@ -7,7 +7,7 @@ import com.athenhub.stockservice.stock.domain.dto.AccessContext;
 import com.athenhub.stockservice.stock.domain.dto.RegisterRequest;
 import com.athenhub.stockservice.stock.domain.exception.StockDomainException;
 import com.athenhub.stockservice.stock.domain.service.BelongsToValidator;
-import com.athenhub.stockservice.stock.domain.service.ProductAccessPermissionChecker;
+import com.athenhub.stockservice.stock.domain.service.ProductAccessPermissionValidator;
 import com.athenhub.stockservice.stock.domain.vo.ProductId;
 import com.athenhub.stockservice.stock.domain.vo.ProductVariantId;
 import com.athenhub.stockservice.stock.domain.vo.StockId;
@@ -77,7 +77,7 @@ public class Stock extends AbstractTimeEntity {
       RegisterRequest request,
       AccessContext context,
       BelongsToValidator belongsToValidator,
-      ProductAccessPermissionChecker permissionChecker) {
+      ProductAccessPermissionValidator permissionChecker) {
     if (!belongsToValidator.belongsTo(context)) {
       throw new StockDomainException(REGISTER_NOT_ALLOWED, "현재 사용자는 해당 허브/벤더에 소속되어 있지 않습니다.");
     }

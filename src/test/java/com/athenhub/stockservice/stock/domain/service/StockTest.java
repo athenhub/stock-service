@@ -20,7 +20,8 @@ class StockTest {
   void create_success() {
     // setup
     BelongsToValidator belongsToValidator = mock(BelongsToValidator.class);
-    ProductAccessPermissionChecker permissionChecker = mock(ProductAccessPermissionChecker.class);
+    ProductAccessPermissionValidator permissionChecker =
+        mock(ProductAccessPermissionValidator.class);
 
     AccessContext context =
         new AccessContext(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID());
