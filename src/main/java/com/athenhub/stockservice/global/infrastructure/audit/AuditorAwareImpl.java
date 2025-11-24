@@ -1,4 +1,4 @@
-package com.athenhub.projectinterface.global.infrastructure.audit;
+package com.athenhub.stockservice.global.infrastructure.audit;
 
 import java.util.Optional;
 import org.springframework.data.domain.AuditorAware;

@@ -1,4 +1,4 @@
-package com.athenhub.projectinterface;
+package com.athenhub.stockservice;
 
 import com.athenhub.commoncore.message.MessageResolver;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;

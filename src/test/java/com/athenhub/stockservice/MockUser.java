@@ -1,4 +1,4 @@
-package com.athenhub.projectinterface;
+package com.athenhub.stockservice;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,4 +1,4 @@
-package com.athenhub.projectinterface.global.infrastructure.audit;
+package com.athenhub.stockservice.global.infrastructure.audit;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;

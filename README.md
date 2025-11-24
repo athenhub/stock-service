@@ -1,9 +1,9 @@
-﻿# project-interface
+﻿# stock-service
 
 ## 개요
-이 문서는 [project-interface](https://github.com/athenhub/project-interface) 프로젝트를 기반으로 새로운 서비스 프로젝트를 생성하는 방법을 안내합니다.  
+이 문서는 [stock-service](https://github.com/athenhub/stock-service) 프로젝트를 기반으로 새로운 서비스 프로젝트를 생성하는 방법을 안내합니다.  
 
-`project-interface`는 AthenHub 서비스 개발 시 공통으로 사용되는 코드, 라이브러리, 설정 등을 포함한 **프로젝트 템플릿** 역할을 합니다.
+`stock-service`는 AthenHub 서비스 개발 시 공통으로 사용되는 코드, 라이브러리, 설정 등을 포함한 **프로젝트 템플릿** 역할을 합니다.
 
 ---
 
@@ -23,23 +23,23 @@ cd {새로운-서비스-레포}
 ``` bash
 // 본 예시에서는 이해를 돕기 위해 새로운 패키지명을 vendorservice 로 사용하였습니다.
 // 실제 사용 시에는 새로운 프로젝트의 패키지명을 사용해주시기 바랍니다.
-mv src/main/java/com/athenhub/projectinterface src/main/java/com/athenhub/vendorservice
-find src/main/java/com/athenhub/vendorservice -type f -name "*.java" | xargs sed -i '' 's/package com.athenhub.projectinterface/package com.athenhub.vendorservice/g'
-find src/main/java/com/athenhub/vendorservice -type f -name "*.java" | xargs sed -i '' 's/import com.athenhub.projectinterface/import com.athenhub.vendorservice/g'
+mv src/main/java/com/athenhub/stockservice src/main/java/com/athenhub/vendorservice
+find src/main/java/com/athenhub/vendorservice -type f -name "*.java" | xargs sed -i '' 's/package com.athenhub.stockservice/package com.athenhub.vendorservice/g'
+find src/main/java/com/athenhub/vendorservice -type f -name "*.java" | xargs sed -i '' 's/import com.athenhub.stockservice/import com.athenhub.vendorservice/g'
 
-mv src/test/java/com/athenhub/projectinterface src/test/java/com/athenhub/vendorservice
-find src/test/java/com/athenhub/vendorservice -type f -name "*.java" | xargs sed -i '' 's/package com.athenhub.projectinterface/package com.athenhub.vendorservice/g'
-find src/test/java/com/athenhub/vendorservice -type f -name "*.java" | xargs sed -i '' 's/import com.athenhub.projectinterface/import com.athenhub.vendorservice/g'
+mv src/test/java/com/athenhub/stockservice src/test/java/com/athenhub/vendorservice
+find src/test/java/com/athenhub/vendorservice -type f -name "*.java" | xargs sed -i '' 's/package com.athenhub.stockservice/package com.athenhub.vendorservice/g'
+find src/test/java/com/athenhub/vendorservice -type f -name "*.java" | xargs sed -i '' 's/import com.athenhub.stockservice/import com.athenhub.vendorservice/g'
 ```
 
 4. IDE로 어플리케이션 진입점, 각종 환경변수 등을 수정합니다. 필수 수정 항목은 다음과 같습니다.
-- ProjectInterfaceApplication.java
+- stockserviceApplication.java
 - build.gradle.kts 의 description
 - settings.gradle.kts 의 rootProject.name
 - application.yml 의 spring.application.name
 - gradle.properties
 - LayeredArchitectureTest 코드 내 패키지명
-- 그 외 project-interface 또는 projectinterface로 되어있는 항목
+- 그 외 stock-service 또는 stockservice로 되어있는 항목
 
 5. gradle의 checkstyleMain, checkstyleTest, spotlessCheck, test 를 실행하여 프로젝트의 문제가 없는지 확인합니다.
 
@@ -48,11 +48,11 @@ find src/test/java/com/athenhub/vendorservice -type f -name "*.java" | xargs sed
 1. GitHub에서 새로운 서비스 레포지토리를 생성합니다. 
    - 예: `user-service`, `order-service` 등
      
-2. 다음 명령어 또는 github 페이지의 DownloadZip을 활용해 project-interface를 로컬로 클론합니다.
+2. 다음 명령어 또는 github 페이지의 DownloadZip을 활용해 stock-service를 로컬로 클론합니다.
 
 ``` bash
-git clone https://github.com/athenhub/project-interface.git
-cd project-interface
+git clone https://github.com/athenhub/stock-service.git
+cd stock-service
 ```
 
 3. 불필요한 Git 히스토리 제거 후 새로운 프로젝트 폴더로 이동
@@ -67,23 +67,23 @@ cd <새로운-서비스-레포>
 ``` bash
 // 본 예시에서는 이해를 돕기 위해 새로운 패키지명을 vendorservice 로 사용하였습니다.
 // 실제 사용 시에는 새로운 프로젝트의 패키지명을 사용해주시기 바랍니다.
-mv src/main/java/com/athenhub/projectinterface src/main/java/com/athenhub/vendorservice
-find src/main/java/com/athenhub/vendorservice -type f -name "*.java" | xargs sed -i '' 's/package com.athenhub.projectinterface/package com.athenhub.vendorservice/g'
-find src/main/java/com/athenhub/vendorservice -type f -name "*.java" | xargs sed -i '' 's/import com.athenhub.projectinterface/import com.athenhub.vendorservice/g'
+mv src/main/java/com/athenhub/stockservice src/main/java/com/athenhub/vendorservice
+find src/main/java/com/athenhub/vendorservice -type f -name "*.java" | xargs sed -i '' 's/package com.athenhub.stockservice/package com.athenhub.vendorservice/g'
+find src/main/java/com/athenhub/vendorservice -type f -name "*.java" | xargs sed -i '' 's/import com.athenhub.stockservice/import com.athenhub.vendorservice/g'
 
-mv src/test/java/com/athenhub/projectinterface src/test/java/com/athenhub/vendorservice
-find src/test/java/com/athenhub/vendorservice -type f -name "*.java" | xargs sed -i '' 's/package com.athenhub.projectinterface/package com.athenhub.vendorservice/g'
-find src/test/java/com/athenhub/vendorservice -type f -name "*.java" | xargs sed -i '' 's/import com.athenhub.projectinterface/import com.athenhub.vendorservice/g'
+mv src/test/java/com/athenhub/stockservice src/test/java/com/athenhub/vendorservice
+find src/test/java/com/athenhub/vendorservice -type f -name "*.java" | xargs sed -i '' 's/package com.athenhub.stockservice/package com.athenhub.vendorservice/g'
+find src/test/java/com/athenhub/vendorservice -type f -name "*.java" | xargs sed -i '' 's/import com.athenhub.stockservice/import com.athenhub.vendorservice/g'
 ```
 
 5. IDE로 어플리케이션 진입점, 각종 환경변수 등을 수정합니다. 필수 수정 항목은 다음과 같습니다.
-- ProjectInterfaceApplication.java
+- stockserviceApplication.java
 - build.gradle.kts 의 description
 - settings.gradle.kts 의 rootProject.name
 - application.yml 의 spring.application.name
 - gradle.properties
 - LayeredArchitectureTest 코드 내 패키지명
-- 그 외 project-interface 또는 projectinterface로 되어있는 항목
+- 그 외 stock-service 또는 stockservice로 되어있는 항목
 
 6. gradle의 checkstyleMain, checkstyleTest, spotlessCheck, test 를 실행하여 프로젝트의 문제가 없는지 확인합니다.
 
@@ -95,7 +95,7 @@ find . -name '.DS_Store' -type f -delete
 
 git init
 git add .
-git commit -m "Initialize project from project-interface template"
+git commit -m "Initialize project from stock-service template"
 git branch -M main
 git remote add origin https://github.com/athenhub/<새로운-서비스-레포>.git
 git push -u origin main
