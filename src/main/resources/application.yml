@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: project-interface
+  config:
+    import: 'optional:configserver:'
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: ${CLOUD_SERVICE_ID}
+  docker:
+    compose:
+      lifecycle-management: start_only
+eureka:
+  instance:
+    prefer-ip-address: false
+    hostname: ${EUREKA_HOSTNAME}
+
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_SERVICE_URL}
