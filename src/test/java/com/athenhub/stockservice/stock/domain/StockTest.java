@@ -34,7 +34,7 @@ class StockTest {
     when(permissionChecker.canAccess(context, request.productId())).thenReturn(true);
 
     // when
-    Stock stock = Stock.of(request, context, belongsToValidator, permissionChecker);
+    Stock stock = Stock.create(request, context, belongsToValidator, permissionChecker);
 
     // then
     assertThat(stock).isNotNull();

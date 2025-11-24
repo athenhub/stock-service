@@ -73,7 +73,7 @@ public class Stock extends AbstractTimeEntity {
    *
    * @return 생성된 Stock 객체
    */
-  public static Stock of(
+  public static Stock create(
       RegisterRequest request,
       AccessContext context,
       BelongsToValidator belongsToValidator,

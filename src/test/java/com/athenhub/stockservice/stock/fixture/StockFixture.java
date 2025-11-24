@@ -88,7 +88,8 @@ public final class StockFixture {
    * <p>가장 일반적인 정상 시나리오(Happy Path) 테스트에 사용한다.
    */
   public static Stock create() {
-    return Stock.of(defaultRegisterRequest(), defaultContext(), alwaysBelongs(), alwaysAllowed());
+    return Stock.create(
+        defaultRegisterRequest(), defaultContext(), alwaysBelongs(), alwaysAllowed());
   }
 
   /**
@@ -97,7 +98,8 @@ public final class StockFixture {
    * @param quantity 재고 수량.
    */
   public static Stock createWithQuantity(int quantity) {
-    return Stock.of(registerRequest(quantity), defaultContext(), alwaysBelongs(), alwaysAllowed());
+    return Stock.create(
+        registerRequest(quantity), defaultContext(), alwaysBelongs(), alwaysAllowed());
   }
 
   /**
@@ -106,7 +108,8 @@ public final class StockFixture {
    * <p>BelongsToValidator만 실패하는 경우를 테스트할 때 사용한다.
    */
   public static Stock createNotBelongingUser() {
-    return Stock.of(defaultRegisterRequest(), defaultContext(), neverBelongs(), alwaysAllowed());
+    return Stock.create(
+        defaultRegisterRequest(), defaultContext(), neverBelongs(), alwaysAllowed());
   }
 
   /**
@@ -115,6 +118,7 @@ public final class StockFixture {
    * <p>ProductAccessPermissionChecker만 실패하는 경우를 테스트할 때 사용한다.
    */
   public static Stock createNoPermission() {
-    return Stock.of(defaultRegisterRequest(), defaultContext(), alwaysBelongs(), neverAllowed());
+    return Stock.create(
+        defaultRegisterRequest(), defaultContext(), alwaysBelongs(), neverAllowed());
   }
 }
