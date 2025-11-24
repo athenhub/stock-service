@@ -5,15 +5,13 @@ import com.athenhub.stockservice.product.domain.vo.ProductId;
 import com.athenhub.stockservice.product.domain.vo.ProductVariantId;
 import com.athenhub.stockservice.product.domain.vo.StockHistoryId;
 import com.athenhub.stockservice.product.domain.vo.StockId;
-
-import java.util.Objects;
-
 import jakarta.persistence.Embedded;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -73,9 +71,7 @@ public class StockHistory extends AbstractTimeEntity {
 
     validateEventTypeNotNull(eventType);
     validateQuantityNotZero(changedQuantity);
-    validateInboundQuantitySign(eventType, changedQuantity);
-    validateCancelQuantitySign(eventType, changedQuantity);
-    validateOutboundQuantitySign(eventType, changedQuantity);
+    validateQuantitySign(changedQuantity, eventType);
 
     this.id = StockHistoryId.create();
     this.stockId = Objects.requireNonNull(stockId);
@@ -126,6 +122,26 @@ public class StockHistory extends AbstractTimeEntity {
     if (changedQuantity == 0) {
       throw new IllegalArgumentException("변경하려는 재고 수량은 0이 될 수 없습니다.");
     }
+  }
+
+  /**
+   * 이벤트 유형에 따른 수량 부호의 유효성을 검증한다.
+   *
+   * <p>재고 변동 유형(입고/출고/취소)에 따라 변경 수량의 부호(양수/음수)가 올바른지 검증한다.
+   *
+   * <ul>
+   *   <li>입고(INBOUND) : 양수만 허용
+   *   <li>출고(OUTBOUND) : 음수만 허용
+   *   <li>취소(CANCEL) : 양수만 허용
+   * </ul>
+   *
+   * @param changedQuantity 변경된 재고 수량
+   * @param eventType 재고 변동 이벤트 유형
+   */
+  private void validateQuantitySign(int changedQuantity, StockEventType eventType) {
+    validateInboundQuantitySign(eventType, changedQuantity);
+    validateCancelQuantitySign(eventType, changedQuantity);
+    validateOutboundQuantitySign(eventType, changedQuantity);
   }
 
   /**
