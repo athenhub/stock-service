@@ -4,7 +4,7 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
-@ConfigurationProperties(prefix = "rabbit.product")
+@ConfigurationProperties(prefix = "rabbit.stock")
 public class RabbitStockProperties {
   private String exchange;
   private String queue;

@@ -1,5 +1,6 @@
 package com.athenhub.stockservice.stock.domain.vo;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.util.Objects;
 import java.util.UUID;
@@ -21,6 +22,7 @@ import lombok.NoArgsConstructor;
 public class StockId {
 
   /** 재고 ID 값. */
+  @Column(name = "stock_id")
   private UUID id;
 
   /** 내부 UUID 값을 반환한다. */
