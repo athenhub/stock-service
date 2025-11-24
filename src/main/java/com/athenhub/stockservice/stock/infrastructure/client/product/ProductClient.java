@@ -1,4 +1,4 @@
-package com.athenhub.stockservice.stock.infrastructure.client;
+package com.athenhub.stockservice.stock.infrastructure.client.product;
 
 import com.athenhub.stockservice.global.infrastructure.feignclient.FeignClientConfig;
 import java.util.UUID;

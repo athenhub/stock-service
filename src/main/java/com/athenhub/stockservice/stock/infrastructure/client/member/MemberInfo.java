@@ -1,8 +1,5 @@
-package com.athenhub.stockservice.stock.infrastructure.dto;
+package com.athenhub.stockservice.stock.infrastructure.client.member;
 
-import com.athenhub.stockservice.stock.infrastructure.MemberRole;
-import com.athenhub.stockservice.stock.infrastructure.MemberStatus;
-import com.athenhub.stockservice.stock.infrastructure.OrganizationType;
 import java.time.LocalDateTime;
 import java.util.UUID;
 

@@ -1,4 +1,4 @@
-package com.athenhub.stockservice.stock.infrastructure.client;
+package com.athenhub.stockservice.stock.infrastructure.client.product;
 
 import java.util.UUID;
 

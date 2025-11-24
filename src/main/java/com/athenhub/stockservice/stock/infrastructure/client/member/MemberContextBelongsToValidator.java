@@ -1,9 +1,7 @@
-package com.athenhub.stockservice.stock.infrastructure;
+package com.athenhub.stockservice.stock.infrastructure.client.member;
 
 import com.athenhub.stockservice.stock.domain.dto.AccessContext;
 import com.athenhub.stockservice.stock.domain.service.BelongsToValidator;
-import com.athenhub.stockservice.stock.infrastructure.client.MemberClient;
-import com.athenhub.stockservice.stock.infrastructure.dto.MemberInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

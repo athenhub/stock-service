@@ -1,4 +1,4 @@
-package com.athenhub.stockservice.stock.infrastructure;
+package com.athenhub.stockservice.stock.infrastructure.client.member;
 
 public enum OrganizationType {
   NONE,
