@@ -1,18 +1,22 @@
 package com.athenhub.stockservice.product.domain;
 
 import com.athenhub.stockservice.global.domain.AbstractTimeEntity;
+import com.athenhub.stockservice.product.domain.dto.AccessContext;
+import com.athenhub.stockservice.product.domain.dto.RegisterRequest;
+import com.athenhub.stockservice.product.domain.exception.StockDomainException;
+import com.athenhub.stockservice.product.domain.service.BelongsToValidator;
+import com.athenhub.stockservice.product.domain.service.ProductAccessPermissionChecker;
 import com.athenhub.stockservice.product.domain.vo.ProductId;
 import com.athenhub.stockservice.product.domain.vo.ProductVariantId;
 import com.athenhub.stockservice.product.domain.vo.StockId;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Version;
-import java.util.Objects;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.Objects;
+
+import static com.athenhub.stockservice.product.domain.exception.PermissionErrorCode.REGISTER_NOT_ALLOWED;
 
 /**
  * 상품 재고(Stock)를 나타내는 도메인 엔티티.
@@ -68,13 +72,25 @@ public class Stock extends AbstractTimeEntity {
   /**
    * Stock 엔티티 생성을 위한 정적 팩토리 메서드.
    *
-   * @param quantity 초기 재고 수량
-   * @param productId 상품 ID
-   * @param variantId 상품 옵션 ID
    * @return 생성된 Stock 객체
    */
-  public static Stock of(int quantity, ProductId productId, ProductVariantId variantId) {
-    return new Stock(quantity, productId, variantId);
+  public static Stock of(
+          RegisterRequest request,
+          AccessContext context,
+          BelongsToValidator belongsToValidator,
+          ProductAccessPermissionChecker permissionChecker
+  ) {
+      if (!belongsToValidator.belongsTo(context)) {
+          throw new StockDomainException(REGISTER_NOT_ALLOWED, "현재 사용자는 해당 허브/벤더에 소속되어 있지 않습니다.");
+      }
+      if (!permissionChecker.canAccess(context, request.productId())) {
+          throw new StockDomainException(REGISTER_NOT_ALLOWED, "해당 상품에 대한 재고 등록 권한이 없습니다.");
+      }
+
+      return new Stock(
+              request.quantity(),
+              ProductId.of(Objects.requireNonNull(request.productId())),
+              ProductVariantId.of(Objects.requireNonNull(request.variantId())));
   }
 
   /**
