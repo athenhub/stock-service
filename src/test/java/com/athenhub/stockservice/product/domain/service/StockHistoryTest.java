@@ -1,9 +1,12 @@
-package com.athenhub.stockservice.product.domain;
+package com.athenhub.stockservice.product.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.athenhub.stockservice.StockFixture;
+
+import com.athenhub.stockservice.product.fixture.StockHistoryFixture;
+import com.athenhub.stockservice.product.domain.StockEventType;
+import com.athenhub.stockservice.product.domain.StockHistory;
 import com.athenhub.stockservice.product.domain.vo.ProductId;
 import com.athenhub.stockservice.product.domain.vo.ProductVariantId;
 import com.athenhub.stockservice.product.domain.vo.StockId;
@@ -46,7 +49,7 @@ class StockHistoryTest {
   @DisplayName("입고(INBOUND)는 양수 수량으로 생성된다")
   void createInboundStockHistory_success() {
     // given
-    StockHistory history = StockFixture.createStockHistory(10, StockEventType.INBOUND);
+    StockHistory history = StockHistoryFixture.createStockHistory(10, StockEventType.INBOUND);
 
     // then
     assertThat(history.getChangedQuantity()).isEqualTo(10);
@@ -57,7 +60,7 @@ class StockHistoryTest {
   @DisplayName("출고(OUTBOUND)는 음수 수량으로 생성된다")
   void createOutboundStockHistory_success() {
     // given
-    StockHistory history = StockFixture.createStockHistory(-5, StockEventType.OUTBOUND);
+    StockHistory history = StockHistoryFixture.createStockHistory(-5, StockEventType.OUTBOUND);
 
     // then
     assertThat(history.getChangedQuantity()).isEqualTo(-5);
@@ -67,7 +70,7 @@ class StockHistoryTest {
   @Test
   @DisplayName("CANCEL(주문 취소)은 양수 수량만 허용된다")
   void createReturnStockHistory_success() {
-    StockHistory history = StockFixture.createStockHistory(10, StockEventType.CANCEL);
+    StockHistory history = StockHistoryFixture.createStockHistory(10, StockEventType.CANCEL);
 
     assertThat(history.getChangedQuantity()).isEqualTo(10);
     assertThat(history.getEventType()).isEqualTo(StockEventType.CANCEL);
@@ -76,7 +79,7 @@ class StockHistoryTest {
   @Test
   @DisplayName("수량이 0이면 예외가 발생한다")
   void throwException_whenQuantityIsZero() {
-    assertThatThrownBy(() -> StockFixture.createStockHistory(0, StockEventType.INBOUND))
+    assertThatThrownBy(() -> StockHistoryFixture.createStockHistory(0, StockEventType.INBOUND))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("변경하려는 재고 수량은 0이 될 수 없습니다.");
   }
@@ -84,7 +87,7 @@ class StockHistoryTest {
   @Test
   @DisplayName("INBOUND에 음수 수량을 넣으면 예외가 발생한다")
   void throwException_whenInboundHasNegativeQuantity() {
-    assertThatThrownBy(() -> StockFixture.createStockHistory(-3, StockEventType.INBOUND))
+    assertThatThrownBy(() -> StockHistoryFixture.createStockHistory(-3, StockEventType.INBOUND))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("입고는 양수 수량만 가능합니다.");
   }
@@ -92,7 +95,7 @@ class StockHistoryTest {
   @Test
   @DisplayName("CANCEL에 음수 수량을 넣으면 예외가 발생한다")
   void throwException_whenCancelHasNegativeQuantity() {
-    assertThatThrownBy(() -> StockFixture.createStockHistory(-3, StockEventType.CANCEL))
+    assertThatThrownBy(() -> StockHistoryFixture.createStockHistory(-3, StockEventType.CANCEL))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("주문 취소는 양수 수량만 가능합니다.");
   }
@@ -100,7 +103,7 @@ class StockHistoryTest {
   @Test
   @DisplayName("OUTBOUND에 양수 수량을 넣으면 예외가 발생한다")
   void throwException_whenOutboundHasPositiveQuantity() {
-    assertThatThrownBy(() -> StockFixture.createStockHistory(10, StockEventType.OUTBOUND))
+    assertThatThrownBy(() -> StockHistoryFixture.createStockHistory(10, StockEventType.OUTBOUND))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("출고는 음수 수량만 가능합니다.");
   }
@@ -108,7 +111,7 @@ class StockHistoryTest {
   @Test
   @DisplayName("EventType이 null이면 예외가 발생한다")
   void throwException_whenEventTypeIsNull() {
-    assertThatThrownBy(() -> StockFixture.createStockHistory(10, null))
+    assertThatThrownBy(() -> StockHistoryFixture.createStockHistory(10, null))
         .isInstanceOf(NullPointerException.class);
   }
 }
