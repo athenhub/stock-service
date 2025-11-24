@@ -1,10 +1,8 @@
-package com.athenhub.stockservice.stock.domain.service;
+package com.athenhub.stockservice.stock.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.athenhub.stockservice.stock.domain.StockEventType;
-import com.athenhub.stockservice.stock.domain.StockHistory;
 import com.athenhub.stockservice.stock.domain.vo.ProductId;
 import com.athenhub.stockservice.stock.domain.vo.ProductVariantId;
 import com.athenhub.stockservice.stock.domain.vo.StockId;

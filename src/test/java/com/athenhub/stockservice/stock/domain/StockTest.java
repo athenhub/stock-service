@@ -1,12 +1,13 @@
-package com.athenhub.stockservice.stock.domain.service;
+package com.athenhub.stockservice.stock.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
-import com.athenhub.stockservice.stock.domain.Stock;
 import com.athenhub.stockservice.stock.domain.dto.AccessContext;
 import com.athenhub.stockservice.stock.domain.dto.RegisterRequest;
+import com.athenhub.stockservice.stock.domain.service.BelongsToValidator;
+import com.athenhub.stockservice.stock.domain.service.ProductAccessPermissionValidator;
 import com.athenhub.stockservice.stock.fixture.StockFixture;
 import java.util.UUID;
 import org.assertj.core.api.Assertions;
