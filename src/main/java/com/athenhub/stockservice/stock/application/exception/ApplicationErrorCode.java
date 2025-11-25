@@ -17,8 +17,8 @@ public enum ApplicationErrorCode implements ErrorCode {
 
   /** 재고 등록 권한이 없는 경우 발생하는 에러. */
   REGISTER_NOT_ALLOWED(HttpStatus.FORBIDDEN.value(), "REGISTER_NOT_ALLOWED"),
-  DUPLICATED_VARIANT(HttpStatus.BAD_REQUEST.value(), "DUPLICATED_VARIANT");
-
+  DUPLICATED_VARIANT(HttpStatus.BAD_REQUEST.value(), "DUPLICATED_VARIANT"),
+  STOCK_DECREASE_CONFLICT(HttpStatus.CONFLICT.value(), "STOCK_DECREASE_CONFLICT");
   private final int status;
   private final String code;
 
