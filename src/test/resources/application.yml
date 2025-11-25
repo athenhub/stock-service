@@ -12,3 +12,7 @@ rabbit:
     exchange: test.stock.exchange
     queue: test.stock.queue
     routing-key: stock.*
+
+rabbitmq:
+  queue:
+    order-created: "order-queue"

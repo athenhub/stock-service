@@ -5,7 +5,6 @@ import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * 외부 Product 서비스와 통신하기 위한 Feign Client이다.
@@ -17,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @author 김지원
  * @since 1.0.0
  */
-@RequestMapping("/api/v1/products")
-@FeignClient(name = "product-service", configuration = FeignClientConfig.class)
+@FeignClient(
+    name = "product-service",
+    path = "/api/v1/products",
+    configuration = FeignClientConfig.class)
 public interface ProductClient {
 
   /**

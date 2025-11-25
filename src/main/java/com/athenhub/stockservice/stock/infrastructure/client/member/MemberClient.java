@@ -3,7 +3,6 @@ package com.athenhub.stockservice.stock.infrastructure.client.member;
 import com.athenhub.stockservice.global.infrastructure.feignclient.FeignClientConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * 회원(Member) 정보를 조회하기 위한 Feign Client이다.
@@ -22,8 +21,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @author 김지원
  * @since 1.0.0
  */
-@RequestMapping("/api/v1/members")
-@FeignClient(name = "member-service", configuration = FeignClientConfig.class)
+@FeignClient(
+    name = "member-service",
+    path = "/api/v1/members",
+    configuration = FeignClientConfig.class)
 public interface MemberClient {
 
   /**

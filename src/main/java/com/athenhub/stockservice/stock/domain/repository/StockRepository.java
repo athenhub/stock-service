@@ -1,7 +1,10 @@
 package com.athenhub.stockservice.stock.domain.repository;
 
 import com.athenhub.stockservice.stock.domain.Stock;
+import com.athenhub.stockservice.stock.domain.vo.ProductId;
+import com.athenhub.stockservice.stock.domain.vo.ProductVariantId;
 import com.athenhub.stockservice.stock.domain.vo.StockId;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,4 +19,6 @@ import org.springframework.stereotype.Repository;
  * @since 1.0.0
  */
 @Repository
-public interface StockRepository extends JpaRepository<Stock, StockId> {}
+public interface StockRepository extends JpaRepository<Stock, StockId> {
+  Optional<Stock> findByProductIdAndVariantId(ProductId productId, ProductVariantId variantId);
+}

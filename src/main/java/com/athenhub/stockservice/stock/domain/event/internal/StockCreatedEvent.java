@@ -4,6 +4,7 @@ import com.athenhub.stockservice.stock.domain.Stock;
 import com.athenhub.stockservice.stock.domain.vo.ProductId;
 import com.athenhub.stockservice.stock.domain.vo.ProductVariantId;
 import com.athenhub.stockservice.stock.domain.vo.StockId;
+import java.time.LocalDateTime;
 
 /**
  * 재고(Stock) 생성 시 발생하는 도메인 내부 이벤트이다.
@@ -21,7 +22,11 @@ import com.athenhub.stockservice.stock.domain.vo.StockId;
  * @since 1.0.0
  */
 public record StockCreatedEvent(
-    StockId stockId, ProductId productId, ProductVariantId variantId, int quantity) {
+    StockId stockId,
+    ProductId productId,
+    ProductVariantId variantId,
+    int quantity,
+    LocalDateTime createdAt) {
 
   /**
    * Stock 엔티티로부터 StockCreatedEvent를 생성한다.
@@ -31,6 +36,10 @@ public record StockCreatedEvent(
    */
   public static StockCreatedEvent from(Stock stock) {
     return new StockCreatedEvent(
-        stock.getId(), stock.getProductId(), stock.getVariantId(), stock.getQuantity());
+        stock.getId(),
+        stock.getProductId(),
+        stock.getVariantId(),
+        stock.getQuantity(),
+        stock.getCreatedAt());
   }
 }

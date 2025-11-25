@@ -1,6 +1,7 @@
 package com.athenhub.stockservice.stock.domain.event.external;
 
 import com.athenhub.stockservice.stock.domain.event.internal.StockCreatedEvent;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
@@ -19,7 +20,7 @@ import java.util.UUID;
  * @since 1.0.0
  */
 public record StockRegisteredEvent(
-    UUID stockId, UUID productId, UUID productVariantId, int quantity) {
+    UUID stockId, UUID productId, UUID productVariantId, int quantity, LocalDateTime registeredAt) {
 
   /**
    * 내부 도메인 이벤트({@link StockCreatedEvent})를 외부 전파용 이벤트로 변환한다.
@@ -34,6 +35,7 @@ public record StockRegisteredEvent(
         event.stockId().toUuid(),
         event.productId().toUuid(),
         event.variantId().toUuid(),
-        event.quantity());
+        event.quantity(),
+        event.createdAt());
   }
 }

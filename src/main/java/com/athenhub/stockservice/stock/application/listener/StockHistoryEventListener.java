@@ -3,6 +3,7 @@ package com.athenhub.stockservice.stock.application.listener;
 import com.athenhub.stockservice.stock.domain.StockEventType;
 import com.athenhub.stockservice.stock.domain.StockHistory;
 import com.athenhub.stockservice.stock.domain.event.internal.StockCreatedEvent;
+import com.athenhub.stockservice.stock.domain.event.internal.StockDecreasedEvent;
 import com.athenhub.stockservice.stock.domain.repository.StockHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
@@ -10,14 +11,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * StockCreatedEvent를 수신하여 재고 이력(StockHistory)을 저장하는 이벤트 리스너이다.
+ * 재고 관련 도메인 이벤트를 수신하여 재고 이력(StockHistory)을 저장하는 이벤트 리스너이다.
  *
- * <p>재고(Stock)가 생성되면 내부적으로 {@link StockCreatedEvent}가 발행되며, 이 리스너는 해당 이벤트를 감지하여 재고 이력 정보를 생성하고
- * 저장한다.
+ * <p>Stock 도메인에서 발생하는 생성/차감 이벤트를 감지하여 {@link StockHistory}를 생성하고 영속화한다.
  *
- * <p>이 설계를 통해 Stock 도메인과 StockHistory 도메인의 결합도를 낮추고 이벤트 기반으로 책임을 분리할 수 있다.
+ * <p>이벤트 기반 처리를 통해 Stock 도메인과 이력 도메인의 결합도를 최소화하고 책임을 분리한다.
  *
- * <p>{@link Transactional}이 적용되어 있으므로 이벤트 처리 과정에서 하나의 트랜잭션으로 이력 저장이 보장된다.
+ * <p>각 이벤트는 {@link Transactional} 환경에서 처리되어 이력 저장이 원자적으로 보장된다.
  *
  * @author 김지원
  * @since 1.0.0
@@ -26,24 +26,53 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class StockHistoryEventListener {
 
-  /** 재고 이력을 저장하기 위한 레포지토리. */
+  /** 재고 이력 저장을 위한 레포지토리. */
   private final StockHistoryRepository stockHistoryRepository;
 
   /**
-   * StockCreatedEvent 발생 시 호출되어 StockHistory를 생성하고 저장한다.
+   * {@link StockCreatedEvent} 발생 시 호출되어 재고 생성 이력을 저장한다.
+   *
+   * <p>이벤트 타입은 {@link StockEventType#INBOUND}로 지정되며, 수량은 {@link StockEventType#signed(int)} 를 통해
+   * 양수로 변환된다.
    *
    * @param event 생성된 재고 정보를 담고 있는 도메인 이벤트
    */
   @Transactional
   @EventListener
   public void onStockCreated(StockCreatedEvent event) {
+    StockEventType inbound = StockEventType.INBOUND;
+
     StockHistory history =
         StockHistory.create(
-            event.quantity(),
+            inbound.signed(event.quantity()),
             event.stockId(),
             event.productId(),
             event.variantId(),
-            StockEventType.INBOUND);
+            inbound);
+
+    stockHistoryRepository.save(history);
+  }
+
+  /**
+   * {@link StockDecreasedEvent} 발생 시 호출되어 재고 차감 이력을 저장한다.
+   *
+   * <p>이벤트 타입은 {@link StockEventType#OUTBOUND}로 지정되며, 수량은 {@link StockEventType#signed(int)} 를 통해
+   * 음수로 변환된다.
+   *
+   * @param event 차감된 재고 정보를 담고 있는 도메인 이벤트
+   */
+  @Transactional
+  @EventListener
+  public void onStockDecreased(StockDecreasedEvent event) {
+    StockEventType outbound = StockEventType.OUTBOUND;
+
+    StockHistory history =
+        StockHistory.create(
+            outbound.signed(event.quantity()),
+            event.stockId(),
+            event.productId(),
+            event.variantId(),
+            outbound);
 
     stockHistoryRepository.save(history);
   }
