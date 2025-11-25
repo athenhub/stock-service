@@ -35,8 +35,8 @@ public class FeignClientConfig {
   /** 사용자 역할 정보 전달용 헤더 명. */
   private static final String HEADER_ROLES = "X-User-Roles";
 
-  /** 사용자 이메일 전달용 헤더 명. */
-  private static final String HEADER_EMAIL = "X-User-Email";
+  /** 사용자 slackId 전달용 헤더 명. */
+  private static final String HEADER_SLACK_ID = "X-Slack-Id";
 
   /** 사용자 이름 전달용 헤더 명. */
   private static final String HEADER_USER_NAME = "X-User-Name";
@@ -83,7 +83,7 @@ public class FeignClientConfig {
       copyToHeader(template, request, HEADER_USER_ID);
       copyToHeader(template, request, HEADER_USERNAME);
       copyToHeader(template, request, HEADER_USER_NAME);
-      copyToHeader(template, request, HEADER_EMAIL);
+      copyToHeader(template, request, HEADER_SLACK_ID);
       copyToHeader(template, request, HEADER_ROLES);
     };
   }
