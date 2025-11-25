@@ -1,0 +1,45 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+        default_schema:
+    hibernate:
+      ddl-auto: create
+    open-in-view: false
+    generate-ddl: true
+
+eureka:
+  client:
+    enabled: false
+
+#rabbit:
+#  stock:
+#    exchange: stock.exchange
+#    queue: stock.queue
+#    routing-key: stock.*
+#
+#rabbitmq:
+#  queue:
+#    order-created: stock.queue
+#
+
+
+rabbit:
+  stock:
+    exchange: order.exchange      # ✅ 누가 보냈는지 (발행 주체/도메인)
+
+    decrease:
+      routing-key: order.created  # ✅ 무슨 일이 일어났는지 (이벤트)
+      queue: stock.decrease.queue # ✅ 누가 처리하는지 (소비 주체/행위)
+
+    increase:
+      routing-key: order.cancelled
+      queue: stock.increase.queue
+
+
