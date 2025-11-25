@@ -2,6 +2,11 @@ spring:
   cloud:
     config:
       enabled: false
+  rabbitmq:
+    host: localhost                 # RabbitMQ 브로커의 호스트명 또는 IP. 로컬 테스트 시 'localhost' 사용.
+    port: 5672                      # AMQP 포트(기본 5672). 브로커가 다른 포트를 쓰면 해당 포트로 설정.
+    username: admin
+    password: _aA123456
 
 eureka:
   client:
@@ -9,10 +14,13 @@ eureka:
 
 rabbit:
   stock:
-    exchange: test.stock.exchange
-    queue: test.stock.queue
-    routing-key: stock.*
+    exchange: stock.exchange
+    registered:
+      routing-key: stock.registered
+      queue: stock.registered.queue
+  order:
+    exchange: order.exchange
+    created:
+      routing-key: order.created
+      queue: order.created.queue
 
-rabbitmq:
-  queue:
-    order-created: "order-queue"

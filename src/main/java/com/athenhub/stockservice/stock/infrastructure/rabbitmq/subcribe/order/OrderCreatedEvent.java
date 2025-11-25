@@ -1,4 +1,4 @@
-package com.athenhub.stockservice.stock.infrastructure.rabbitmq;
+package com.athenhub.stockservice.stock.infrastructure.rabbitmq.subcribe.order;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

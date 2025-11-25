@@ -1,4 +1,4 @@
-package com.athenhub.stockservice.stock.infrastructure.rabbitmq;
+package com.athenhub.stockservice.stock.infrastructure.rabbitmq.subcribe.order;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.Binding;
@@ -19,24 +19,24 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @RequiredArgsConstructor
-@EnableConfigurationProperties(RabbitStockProperties.class)
-public class RabbitStockConfig {
+@EnableConfigurationProperties(RabbitOrderProperties.class)
+public class RabbitOrderConfig {
 
-  private final RabbitStockProperties stockProperties;
+  private final RabbitOrderProperties orderProperties;
 
   /** stock 관련 이벤트를 발행하는 Topic Exchange. */
   @Bean
-  public TopicExchange stockExchange() {
+  public TopicExchange orderExchange() {
     return new TopicExchange(
-        stockProperties.getExchange(), // 예: stock.exchange
+        orderProperties.getExchange(), // 예: stock.exchange
         true,
         false);
   }
 
-  /** stock 이벤트를 수신할 Queue. */
+
   @Bean
-  public Queue stockQueue() {
-    return QueueBuilder.durable(stockProperties.getQueue()) // 예: stock.queue
+  public Queue orderCreatedQueue() {
+    return QueueBuilder.durable(orderProperties.getCreated().getQueue())
         .build();
   }
 
@@ -46,15 +46,9 @@ public class RabbitStockConfig {
    * <p>routing key를 통해 어떤 메시지를 수신할지 결정된다.
    */
   @Bean
-  public Binding stockBinding(Queue stockQueue, TopicExchange stockExchange) {
-    return BindingBuilder.bind(stockQueue)
-        .to(stockExchange)
-        .with(stockProperties.getRoutingKey()); // 예: stock.*
-  }
-
-  /** JSON 기반 메시지 직렬화 Converter. */
-  @Bean
-  public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
-    return new Jackson2JsonMessageConverter();
+  public Binding orderCreateBinding(Queue orderCreatedQueue, TopicExchange orderExchange) {
+    return BindingBuilder.bind(orderCreatedQueue)
+        .to(orderExchange)
+        .with(orderProperties.getCreated().getRoutingKey());
   }
 }

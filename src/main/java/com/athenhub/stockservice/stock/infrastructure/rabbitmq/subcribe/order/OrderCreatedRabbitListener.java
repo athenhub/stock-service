@@ -1,4 +1,4 @@
-package com.athenhub.stockservice.stock.infrastructure.rabbitmq;
+package com.athenhub.stockservice.stock.infrastructure.rabbitmq.subcribe.order;
 
 import com.athenhub.stockservice.stock.application.evenhandler.StockDecreaseHandler;
 import com.athenhub.stockservice.stock.domain.dto.StockDecreaseRequest;
@@ -15,7 +15,7 @@ public class OrderCreatedRabbitListener {
 
   private final StockDecreaseHandler stockDecreaseHandler;
 
-  @RabbitListener(queues = "${rabbitmq.queue.order-created}")
+  @RabbitListener(queues = "${rabbit.order.created.queue}")
   public void listen(OrderCreatedEvent event) {
     StockDecreaseRequest stockDecreaseRequest =
         new StockDecreaseRequest(

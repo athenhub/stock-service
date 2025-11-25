@@ -1,4 +1,4 @@
-package com.athenhub.stockservice.stock.infrastructure.rabbitmq;
+package com.athenhub.stockservice.stock.infrastructure.rabbitmq.publish;
 
 import com.athenhub.stockservice.stock.domain.event.external.StockRegisteredEvent;
 import com.athenhub.stockservice.stock.domain.event.internal.StockCreatedEvent;
@@ -58,6 +58,6 @@ public class StockRegisteredEventPublisher {
     StockRegisteredEvent message = StockRegisteredEvent.from(event);
 
     // RabbitMQ로 메시지 전송
-    rabbitTemplate.convertAndSend(stockProperties.getExchange(), "stock.registered", message);
+    rabbitTemplate.convertAndSend(stockProperties.getExchange(), stockProperties.getRegistered().getRoutingKey(), message);
   }
 }

@@ -1,4 +1,4 @@
-package com.athenhub.stockservice.stock.infrastructure.rabbitmq;
+package com.athenhub.stockservice.stock.infrastructure.rabbitmq.subcribe.order;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -31,15 +31,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 1.0.0
  */
 @Data
-@ConfigurationProperties(prefix = "rabbit.stock")
-public class RabbitStockProperties {
-
-  /** 재고 이벤트를 발행할 Exchange 이름. */
+@ConfigurationProperties(prefix = "rabbit.order")
+public class RabbitOrderProperties {
   private String exchange;
+  private Created created;
 
-  /** 재고 이벤트를 수신할 Queue 이름. */
-  private String queue;
-
-  /** Exchange 와 Queue 를 연결할 Routing Key. */
-  private String routingKey;
+  @Data
+  public static class Created {
+    private String queue;
+    private String routingKey;
+  }
 }
