@@ -1,6 +1,5 @@
-package com.athenhub.stockservice.stock.infrastructure.messaging;
+package com.athenhub.stockservice.stock.infrastructure.rabbitmq;
 
-import com.athenhub.stockservice.global.infrastructure.rabbitmq.RabbitStockProperties;
 import com.athenhub.stockservice.stock.domain.event.external.StockRegisteredEvent;
 import com.athenhub.stockservice.stock.domain.event.internal.StockCreatedEvent;
 import lombok.RequiredArgsConstructor;

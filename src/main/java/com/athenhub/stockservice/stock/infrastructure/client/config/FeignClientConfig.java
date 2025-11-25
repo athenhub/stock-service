@@ -1,4 +1,4 @@
-package com.athenhub.stockservice.global.infrastructure.feignclient;
+package com.athenhub.stockservice.stock.infrastructure.client.config;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;

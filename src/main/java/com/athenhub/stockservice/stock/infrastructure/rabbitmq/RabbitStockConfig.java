@@ -1,4 +1,4 @@
-package com.athenhub.stockservice.global.infrastructure.rabbitmq;
+package com.athenhub.stockservice.stock.infrastructure.rabbitmq;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.Binding;
