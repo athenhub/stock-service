@@ -35,9 +35,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class RabbitStockProperties {
   private String exchange;
   private Registered registered;
+  private Decreased decreased;
 
   @Data
   public static class Registered {
+    private String queue;
+    private String routingKey;
+  }
+
+  @Data
+  public static class Decreased {
     private String queue;
     private String routingKey;
   }

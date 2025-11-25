@@ -26,8 +26,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @FeignClient(
     name = "member-service",
     path = "/api/v1/members",
-    configuration = {FeignClientConfig.class, MemberFeignConfig.class}
-)
+    configuration = {FeignClientConfig.class, MemberFeignConfig.class})
 public interface MemberClient {
 
   /**

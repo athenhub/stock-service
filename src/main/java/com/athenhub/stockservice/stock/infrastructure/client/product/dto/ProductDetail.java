@@ -25,17 +25,15 @@ import java.util.UUID;
  * @since 1.0.0
  */
 public record ProductDetail(
-        UUID productId,
-        String name,
-        String description,
-        Long price,
-        UUID hubId,
-        UUID vendorId,
-        ProductType type,
-        ProductStatus status,
-        List<ProductVariantDetails> variants,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt,
-        LocalDateTime deletedAt)
-{
-}
+    UUID productId,
+    String name,
+    String description,
+    Long price,
+    UUID hubId,
+    UUID vendorId,
+    ProductType type,
+    ProductStatus status,
+    List<ProductVariantDetails> variants,
+    LocalDateTime createdAt,
+    LocalDateTime updatedAt,
+    LocalDateTime deletedAt) {}

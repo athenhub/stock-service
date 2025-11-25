@@ -1,6 +1,7 @@
 package com.athenhub.stockservice.stock.domain.repository;
 
 import com.athenhub.stockservice.stock.domain.StockHistory;
+import com.athenhub.stockservice.stock.domain.vo.OrderId;
 import com.athenhub.stockservice.stock.domain.vo.StockHistoryId;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -14,4 +15,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author 김지원
  * @since 1.0.0
  */
-public interface StockHistoryRepository extends JpaRepository<StockHistory, StockHistoryId> {}
+public interface StockHistoryRepository extends JpaRepository<StockHistory, StockHistoryId> {
+
+  boolean existsByOrderId(OrderId orderId);
+}

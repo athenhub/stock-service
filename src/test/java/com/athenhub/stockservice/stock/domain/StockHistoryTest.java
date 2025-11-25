@@ -21,7 +21,7 @@ class StockHistoryTest {
 
   @Test
   @DisplayName("재고가 변하면 재고 이력을 쌓는다.")
-  void create_success() {
+  void inbound_success() {
     // given
     int changedQuantity = -10;
     StockId stockId = StockId.of(UUID.randomUUID());
@@ -31,7 +31,7 @@ class StockHistoryTest {
 
     // when
     StockHistory history =
-        StockHistory.create(changedQuantity, stockId, productId, variantId, eventType);
+        StockHistory.of(changedQuantity, stockId, productId, variantId, eventType);
 
     // then
     assertThat(history.getId()).isNotNull();
@@ -44,7 +44,7 @@ class StockHistoryTest {
 
   @Test
   @DisplayName("입고(INBOUND)는 양수 수량으로 생성된다")
-  void createInboundStockHistory_success() {
+  void inboundInboundStockHistory_success() {
     // given
     StockHistory history = StockHistoryFixture.createStockHistory(10, StockEventType.INBOUND);
 
@@ -55,7 +55,7 @@ class StockHistoryTest {
 
   @Test
   @DisplayName("출고(OUTBOUND)는 음수 수량으로 생성된다")
-  void createOutboundStockHistory_success() {
+  void inboundOutboundStockHistory_success() {
     // given
     StockHistory history = StockHistoryFixture.createStockHistory(-5, StockEventType.OUTBOUND);
 
@@ -66,7 +66,7 @@ class StockHistoryTest {
 
   @Test
   @DisplayName("CANCEL(주문 취소)은 양수 수량만 허용된다")
-  void createReturnStockHistory_success() {
+  void inboundReturnStockHistory_success() {
     StockHistory history = StockHistoryFixture.createStockHistory(10, StockEventType.CANCEL);
 
     assertThat(history.getChangedQuantity()).isEqualTo(10);

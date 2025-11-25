@@ -47,11 +47,10 @@ public class StockRegistrationFacade {
   }
 
   private void validateAllProductVariantExists(StockInitializeCommand command) {
-    ProductVariantMatchCommand matchCommand =
-        convertToProductVariantMatchCommand(command);
+    ProductVariantMatchCommand matchCommand = convertToProductVariantMatchCommand(command);
     if (!productVariantConsistencyValidator.matches(matchCommand)) {
-      throw new StockApplicationException(REGISTER_NOT_ALLOWED,
-          "상품에 등록된 옵션 목록과 재고 등록 요청 옵션 목록이 일치하지 않습니다.");
+      throw new StockApplicationException(
+          REGISTER_NOT_ALLOWED, "상품에 등록된 옵션 목록과 재고 등록 요청 옵션 목록이 일치하지 않습니다.");
     }
   }
 

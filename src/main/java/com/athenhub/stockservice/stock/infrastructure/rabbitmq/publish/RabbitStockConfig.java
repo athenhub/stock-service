@@ -32,22 +32,27 @@ public class RabbitStockConfig {
         false);
   }
 
-  /** stock 이벤트를 수신할 Queue. */
   @Bean
   public Queue stockRegisteredQueue() {
-    return QueueBuilder.durable(stockProperties.getRegistered().getQueue())
-        .build();
+    return QueueBuilder.durable(stockProperties.getRegistered().getQueue()).build();
   }
 
-  /**
-   * Exchange와 Queue를 Binding 한다.
-   *
-   * <p>routing key를 통해 어떤 메시지를 수신할지 결정된다.
-   */
   @Bean
   public Binding stockRegisterdBinding(Queue stockRegisteredQueue, TopicExchange stockExchange) {
     return BindingBuilder.bind(stockRegisteredQueue)
         .to(stockExchange)
         .with(stockProperties.getRegistered().getRoutingKey());
+  }
+
+  @Bean
+  public Queue stockDecreasedQueue() {
+    return QueueBuilder.durable(stockProperties.getDecreased().getQueue()).build();
+  }
+
+  @Bean
+  public Binding stockDecreasedBinding(Queue stockDecreasedQueue, TopicExchange stockExchange) {
+    return BindingBuilder.bind(stockDecreasedQueue)
+        .to(stockExchange)
+        .with(stockProperties.getDecreased().getRoutingKey());
   }
 }

@@ -1,6 +1,7 @@
 package com.athenhub.stockservice.stock.domain;
 
 import com.athenhub.stockservice.global.domain.AbstractTimeEntity;
+import com.athenhub.stockservice.stock.domain.vo.OrderId;
 import com.athenhub.stockservice.stock.domain.vo.ProductId;
 import com.athenhub.stockservice.stock.domain.vo.ProductVariantId;
 import com.athenhub.stockservice.stock.domain.vo.StockHistoryId;
@@ -11,6 +12,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,13 +29,22 @@ import lombok.NoArgsConstructor;
  * @since 1.0.0
  */
 @Entity
-@Table(name = "p_stock_history")
+@Table(
+    name = "p_stock_history",
+    uniqueConstraints = {
+      @UniqueConstraint(
+          name = "uk_order_variant",
+          columnNames = {"order_id", "product_variant_id"})
+    })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class StockHistory extends AbstractTimeEntity {
 
   /** 재고 이력 식별자. */
   @EmbeddedId private StockHistoryId id;
+
+  /** 주문 이력 식별자. */
+  @Embedded private OrderId orderId;
 
   /** 재고 식별자. */
   @Embedded private StockId stockId;
@@ -62,9 +73,10 @@ public class StockHistory extends AbstractTimeEntity {
    * @param variantId 상품 옵션 식별자
    * @param eventType 재고 변동 이벤트 유형
    */
-  public StockHistory(
+  private StockHistory(
       int changedQuantity,
       StockId stockId,
+      OrderId orderId,
       ProductId productId,
       ProductVariantId variantId,
       StockEventType eventType) {
@@ -74,30 +86,43 @@ public class StockHistory extends AbstractTimeEntity {
     validateQuantitySign(changedQuantity, eventType);
 
     this.id = StockHistoryId.create();
+    this.orderId = orderId; // 재고 등록시에는 주문 번호가 없다.(nullable)
     this.stockId = Objects.requireNonNull(stockId);
     this.productId = Objects.requireNonNull(productId);
     this.variantId = Objects.requireNonNull(variantId);
-    this.eventType = eventType;
+    this.eventType = Objects.requireNonNull(eventType);
     this.changedQuantity = changedQuantity;
   }
 
-  /**
-   * 재고 이력 생성을 위한 정적 팩토리 메서드.
-   *
-   * @param changedQuantity 변경된 재고 수량
-   * @param stockId 재고 식별자
-   * @param productId 상품 식별자
-   * @param variantId 상품 옵션 식별자
-   * @param eventType 재고 변동 이벤트 유형
-   * @return 생성된 StockHistory 객체
-   */
-  public static StockHistory create(
+  public static StockHistory of(
       int changedQuantity,
       StockId stockId,
       ProductId productId,
       ProductVariantId variantId,
       StockEventType eventType) {
-    return new StockHistory(changedQuantity, stockId, productId, variantId, eventType);
+    return new StockHistory(changedQuantity, stockId, null, productId, variantId, eventType);
+  }
+
+  public static StockHistory inbound(Stock stock, int quantity) {
+    StockEventType inbound = StockEventType.INBOUND;
+    return new StockHistory(
+        inbound.signed(quantity),
+        stock.getId(),
+        null,
+        stock.getProductId(),
+        stock.getVariantId(),
+        inbound);
+  }
+
+  public static StockHistory outbound(Stock stock, OrderId orderId, int quantity) {
+    StockEventType type = StockEventType.OUTBOUND;
+    return new StockHistory(
+        type.signed(quantity),
+        stock.getId(),
+        orderId,
+        stock.getProductId(),
+        stock.getVariantId(),
+        type);
   }
 
   /**

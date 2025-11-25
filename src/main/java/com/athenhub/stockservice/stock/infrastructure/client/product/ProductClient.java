@@ -20,7 +20,8 @@ import org.springframework.web.bind.annotation.PathVariable;
  */
 @FeignClient(
     name = "product-service",
-    path = "/api/v1/products", configuration = {FeignClientConfig.class, ProductFeignConfig.class})
+    path = "/api/v1/products",
+    configuration = {FeignClientConfig.class, ProductFeignConfig.class})
 public interface ProductClient {
 
   /**

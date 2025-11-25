@@ -5,8 +5,7 @@ import com.athenhub.commoncore.error.ErrorCode;
 
 public class ProductFeignException extends AbstractServiceException {
 
-  public ProductFeignException(ErrorCode errorCode,
-      Object... errorArgs) {
+  public ProductFeignException(ErrorCode errorCode, Object... errorArgs) {
     super(errorCode, errorArgs);
   }
 }

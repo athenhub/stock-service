@@ -15,24 +15,22 @@ import org.springframework.stereotype.Component;
 /**
  * Product 서비스와 통신하여 상품 및 옵션(Variant)의 존재 여부를 검증한다.
  *
- * <p>지정된 productId와 variantId 목록이 실제 Product 서비스에 존재하는지 확인하며,
- * 하나라도 존재하지 않을 경우 예외를 발생시킨다.
+ * <p>지정된 productId와 variantId 목록이 실제 Product 서비스에 존재하는지 확인하며, 하나라도 존재하지 않을 경우 예외를 발생시킨다.
  *
  * @author 김지원
  * @since 1.0.0
  */
 @Component
 @RequiredArgsConstructor
-public class DefaultProductVariantConsistencyValidator implements
-    ProductVariantConsistencyValidator {
+public class DefaultProductVariantConsistencyValidator
+    implements ProductVariantConsistencyValidator {
 
   private final ProductClient productClient;
 
   /**
    * 상품 및 옵션이 모두 존재하는지 검증한다.
    *
-   * <p>상품이 존재하지 않거나, 옵션 중 하나라도 존재하지 않을 경우
-   * {@link StockApplicationException}이 발생한다.
+   * <p>상품이 존재하지 않거나, 옵션 중 하나라도 존재하지 않을 경우 {@link StockApplicationException}이 발생한다.
    *
    * @param command 상품 및 옵션 식별자 정보
    * @return 모두 존재할 경우 true

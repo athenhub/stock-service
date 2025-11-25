@@ -24,6 +24,9 @@ rabbit:
     registered:
       routing-key: stock.registered
       queue: stock.registered.queue
+    decreased:
+      routing-key: stock.decreased
+      queue: stock.decreased.queue
   order:
     exchange: order.exchange
     created:

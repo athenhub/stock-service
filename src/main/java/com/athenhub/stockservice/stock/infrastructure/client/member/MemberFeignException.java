@@ -5,8 +5,7 @@ import com.athenhub.commoncore.error.ErrorCode;
 
 public class MemberFeignException extends AbstractServiceException {
 
-  public MemberFeignException(ErrorCode errorCode,
-      Object... errorArgs) {
+  public MemberFeignException(ErrorCode errorCode, Object... errorArgs) {
     super(errorCode, errorArgs);
   }
 }
