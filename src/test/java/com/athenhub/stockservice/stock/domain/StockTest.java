@@ -4,10 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
-import com.athenhub.stockservice.stock.domain.dto.AccessContext;
-import com.athenhub.stockservice.stock.domain.dto.RegisterRequest;
-import com.athenhub.stockservice.stock.domain.service.BelongsToValidator;
-import com.athenhub.stockservice.stock.domain.service.ProductAccessPermissionValidator;
+import com.athenhub.stockservice.stock.domain.dto.InitialStock;
 import com.athenhub.stockservice.stock.fixture.StockFixture;
 import java.util.UUID;
 import org.assertj.core.api.Assertions;
@@ -19,31 +16,17 @@ class StockTest {
   @DisplayName("모든 조건을 만족하면 Stock이 정상적으로 생성된다.")
   @Test
   void create_success() {
-    // setup
-    BelongsToValidator belongsToValidator = mock(BelongsToValidator.class);
-    ProductAccessPermissionValidator permissionChecker =
-        mock(ProductAccessPermissionValidator.class);
-
-    AccessContext context =
-        new AccessContext(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID());
-
-    RegisterRequest request = new RegisterRequest(UUID.randomUUID(), UUID.randomUUID(), 10);
-
     // given
-    when(belongsToValidator.belongsTo(context)).thenReturn(true);
-    when(permissionChecker.canAccess(context, request.productId())).thenReturn(true);
+    InitialStock request = new InitialStock(UUID.randomUUID(), UUID.randomUUID(), 10);
 
     // when
-    Stock stock = Stock.create(request, context, belongsToValidator, permissionChecker);
+    Stock stock = Stock.create(request);
 
     // then
     assertThat(stock).isNotNull();
     assertThat(stock.getQuantity()).isEqualTo(request.quantity());
     assertThat(stock.getProductId()).isNotNull();
     assertThat(stock.getVariantId()).isNotNull();
-
-    verify(belongsToValidator, times(1)).belongsTo(context);
-    verify(permissionChecker, times(1)).canAccess(context, request.productId());
   }
 
   @Test

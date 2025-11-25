@@ -1,4 +1,4 @@
-package com.athenhub.stockservice.stock.infrastructure.client.member;
+package com.athenhub.stockservice.stock.infrastructure.client.member.dto;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

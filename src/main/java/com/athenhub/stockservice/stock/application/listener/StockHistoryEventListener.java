@@ -5,6 +5,7 @@ import com.athenhub.stockservice.stock.domain.StockHistory;
 import com.athenhub.stockservice.stock.domain.event.internal.StockCreatedEvent;
 import com.athenhub.stockservice.stock.domain.event.internal.StockDecreasedEvent;
 import com.athenhub.stockservice.stock.domain.repository.StockHistoryRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -40,17 +41,8 @@ public class StockHistoryEventListener {
   @Transactional
   @EventListener
   public void onStockCreated(StockCreatedEvent event) {
-    StockEventType inbound = StockEventType.INBOUND;
-
-    StockHistory history =
-        StockHistory.create(
-            inbound.signed(event.quantity()),
-            event.stockId(),
-            event.productId(),
-            event.variantId(),
-            inbound);
-
-    stockHistoryRepository.save(history);
+    List<StockHistory> histories = convertToHistories(event);
+    stockHistoryRepository.saveAll(histories);
   }
 
   /**
@@ -75,5 +67,20 @@ public class StockHistoryEventListener {
             outbound);
 
     stockHistoryRepository.save(history);
+  }
+
+  private List<StockHistory> convertToHistories(StockCreatedEvent event) {
+    StockEventType inbound = StockEventType.INBOUND;
+
+    return event.stocks().stream()
+        .map(
+            it ->
+                StockHistory.create(
+                    inbound.signed(it.quantity()),
+                    it.stockId(),
+                    it.productId(),
+                    it.variantId(),
+                    inbound))
+        .toList();
   }
 }

@@ -1,13 +1,7 @@
 package com.athenhub.stockservice.stock.domain;
 
-import static com.athenhub.stockservice.stock.domain.exception.PermissionErrorCode.REGISTER_NOT_ALLOWED;
-
 import com.athenhub.stockservice.global.domain.AbstractTimeEntity;
-import com.athenhub.stockservice.stock.domain.dto.AccessContext;
-import com.athenhub.stockservice.stock.domain.dto.RegisterRequest;
-import com.athenhub.stockservice.stock.domain.exception.StockDomainException;
-import com.athenhub.stockservice.stock.domain.service.BelongsToValidator;
-import com.athenhub.stockservice.stock.domain.service.ProductAccessPermissionValidator;
+import com.athenhub.stockservice.stock.domain.dto.InitialStock;
 import com.athenhub.stockservice.stock.domain.vo.ProductId;
 import com.athenhub.stockservice.stock.domain.vo.ProductVariantId;
 import com.athenhub.stockservice.stock.domain.vo.StockId;
@@ -77,18 +71,7 @@ public class Stock extends AbstractTimeEntity {
    *
    * @return 생성된 Stock 객체
    */
-  public static Stock create(
-      RegisterRequest request,
-      AccessContext context,
-      BelongsToValidator belongsToValidator,
-      ProductAccessPermissionValidator permissionChecker) {
-    if (!belongsToValidator.belongsTo(context)) {
-      throw new StockDomainException(REGISTER_NOT_ALLOWED, "현재 사용자는 해당 허브/벤더에 소속되어 있지 않습니다.");
-    }
-    if (!permissionChecker.canAccess(context, request.productId())) {
-      throw new StockDomainException(REGISTER_NOT_ALLOWED, "해당 상품에 대한 재고 등록 권한이 없습니다.");
-    }
-
+  public static Stock create(InitialStock request) {
     return new Stock(
         request.quantity(),
         ProductId.of(Objects.requireNonNull(request.productId())),

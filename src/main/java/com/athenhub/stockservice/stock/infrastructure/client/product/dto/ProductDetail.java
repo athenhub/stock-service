@@ -1,5 +1,7 @@
-package com.athenhub.stockservice.stock.infrastructure.client.product;
+package com.athenhub.stockservice.stock.infrastructure.client.product.dto;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -22,4 +24,18 @@ import java.util.UUID;
  * @author 김지원
  * @since 1.0.0
  */
-public record ProductDetail(UUID hubId, UUID vendorId) {}
+public record ProductDetail(
+        UUID productId,
+        String name,
+        String description,
+        Long price,
+        UUID hubId,
+        UUID vendorId,
+        ProductType type,
+        ProductStatus status,
+        List<ProductVariantDetails> variants,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt,
+        LocalDateTime deletedAt)
+{
+}

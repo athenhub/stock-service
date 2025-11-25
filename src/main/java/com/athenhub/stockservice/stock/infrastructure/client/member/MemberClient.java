@@ -1,6 +1,8 @@
 package com.athenhub.stockservice.stock.infrastructure.client.member;
 
 import com.athenhub.stockservice.global.infrastructure.feignclient.FeignClientConfig;
+import com.athenhub.stockservice.stock.infrastructure.client.member.config.MemberFeignConfig;
+import com.athenhub.stockservice.stock.infrastructure.client.member.dto.MemberInfo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -24,7 +26,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 @FeignClient(
     name = "member-service",
     path = "/api/v1/members",
-    configuration = FeignClientConfig.class)
+    configuration = {FeignClientConfig.class, MemberFeignConfig.class}
+)
 public interface MemberClient {
 
   /**

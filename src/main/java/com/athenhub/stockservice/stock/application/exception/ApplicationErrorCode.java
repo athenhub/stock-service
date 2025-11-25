@@ -1,4 +1,4 @@
-package com.athenhub.stockservice.stock.domain.exception;
+package com.athenhub.stockservice.stock.application.exception;
 
 import com.athenhub.commoncore.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -13,10 +13,11 @@ import org.springframework.http.HttpStatus;
  * @since 1.0.0
  */
 @RequiredArgsConstructor
-public enum PermissionErrorCode implements ErrorCode {
+public enum ApplicationErrorCode implements ErrorCode {
 
   /** 재고 등록 권한이 없는 경우 발생하는 에러. */
-  REGISTER_NOT_ALLOWED(HttpStatus.FORBIDDEN.value(), "REGISTER_NOT_ALLOWED");
+  REGISTER_NOT_ALLOWED(HttpStatus.FORBIDDEN.value(), "REGISTER_NOT_ALLOWED"),
+  DUPLICATED_VARIANT(HttpStatus.BAD_REQUEST.value(), "DUPLICATED_VARIANT");
 
   private final int status;
   private final String code;

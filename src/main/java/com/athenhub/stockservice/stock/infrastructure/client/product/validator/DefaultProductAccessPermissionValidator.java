@@ -1,9 +1,12 @@
-package com.athenhub.stockservice.stock.infrastructure.client.product;
+package com.athenhub.stockservice.stock.infrastructure.client.product.validator;
 
 import com.athenhub.stockservice.stock.domain.dto.AccessContext;
 import com.athenhub.stockservice.stock.domain.service.ProductAccessPermissionValidator;
 import java.util.Objects;
 import java.util.UUID;
+
+import com.athenhub.stockservice.stock.infrastructure.client.product.ProductClient;
+import com.athenhub.stockservice.stock.infrastructure.client.product.dto.ProductDetail;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

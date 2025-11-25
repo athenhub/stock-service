@@ -1,4 +1,4 @@
-package com.athenhub.stockservice.stock.infrastructure.client.member;
+package com.athenhub.stockservice.stock.infrastructure.client.member.dto;
 
 /**
  * 회원의 상태(Status)를 나타내는 열거형이다.

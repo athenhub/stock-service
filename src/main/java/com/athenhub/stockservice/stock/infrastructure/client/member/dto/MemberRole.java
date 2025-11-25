@@ -1,4 +1,4 @@
-package com.athenhub.stockservice.stock.infrastructure.client.member;
+package com.athenhub.stockservice.stock.infrastructure.client.member.dto;
 
 /**
  * 회원의 역할(Role)을 나타내는 열거형이다.

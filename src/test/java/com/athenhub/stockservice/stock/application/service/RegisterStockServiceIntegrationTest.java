@@ -1,75 +1,60 @@
 package com.athenhub.stockservice.stock.application.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 import com.athenhub.stockservice.stock.application.dto.RegisterResponse;
+import com.athenhub.stockservice.stock.application.dto.StockInitializeCommand;
 import com.athenhub.stockservice.stock.domain.Stock;
-import com.athenhub.stockservice.stock.domain.StockEventType;
-import com.athenhub.stockservice.stock.domain.StockHistory;
-import com.athenhub.stockservice.stock.domain.dto.AccessContext;
-import com.athenhub.stockservice.stock.domain.dto.RegisterRequest;
 import com.athenhub.stockservice.stock.domain.event.internal.StockCreatedEvent;
 import com.athenhub.stockservice.stock.domain.repository.StockHistoryRepository;
 import com.athenhub.stockservice.stock.domain.repository.StockRepository;
-import com.athenhub.stockservice.stock.domain.service.BelongsToValidator;
-import com.athenhub.stockservice.stock.domain.service.ProductAccessPermissionValidator;
-import com.athenhub.stockservice.stock.domain.vo.StockId;
-import com.athenhub.stockservice.stock.fixture.StockFixture;
+import com.athenhub.stockservice.stock.domain.vo.ProductId;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.event.ApplicationEvents;
 import org.springframework.test.context.event.RecordApplicationEvents;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * RegisterStockService 통합 테스트.
+ *
+ * @author 김지원
+ * @since 1.0.0
+ */
 @Transactional
 @SpringBootTest
 @RecordApplicationEvents
 class RegisterStockServiceIntegrationTest {
-  @Autowired RegisterStockService registerStockService;
 
-  @Autowired StockRepository stockRepository;
-
-  @Autowired StockHistoryRepository stockHistoryRepository;
-
-  @MockitoBean BelongsToValidator belongsToValidator;
-
-  @MockitoBean ProductAccessPermissionValidator permissionValidator;
-
-  @Autowired ApplicationEvents applicationEvents;
+  @Autowired private RegisterStockService registerStockService;
+  @Autowired private StockRepository stockRepository;
+  @Autowired private StockHistoryRepository stockHistoryRepository;
+  @Autowired private ApplicationEvents applicationEvents;
 
   @Test
-  @DisplayName("재고 등록 시 stock과 stockHistory가 함께 생성된다.")
-  void register_success_with_spring() {
+  @DisplayName("재고 등록 시 Stock 저장, StockHistory 생성, 이벤트 발행이 모두 수행된다.")
+  void register_success() {
     // given
-    RegisterRequest request = StockFixture.defaultRegisterRequest();
-    AccessContext context = StockFixture.defaultContext();
-
-    when(belongsToValidator.belongsTo(context)).thenReturn(true);
-    when(permissionValidator.canAccess(context, request.productId())).thenReturn(true);
+    StockInitializeCommand command = StockInitializeCommandFixture.create();
+    ProductId productId = ProductId.of(command.productId());
 
     // when
-    RegisterResponse response = registerStockService.register(request, context);
+    RegisterResponse response = registerStockService.register(command);
 
-    // then
-    // Stock이 잘 저장되었는지 검증
-    Stock stock = stockRepository.findById(StockId.of(response.stockId())).orElseThrow();
-    assertThat(stock.getQuantity()).isEqualTo(10);
-    assertThat(stock.getProductId()).isNotNull();
+    // then 1. Stock 저장 확인
+    List<Stock> stocks = stockRepository.findByProductId(productId);
+    assertThat(stocks).hasSize(command.productVariants().size());
 
-    // StockCreatedEvent가 발행되었는지 검증
+    // then 2. StockCreatedEvent 발행 확인
     assertThat(applicationEvents.stream(StockCreatedEvent.class).count()).isEqualTo(1);
 
-    // 내부 Spring Event에 의해 생성된 StockHistory 검증
-    assertThat(stockHistoryRepository.findAll()).hasSize(1);
+    // then 3. StockHistory 생성 확인
+    assertThat(stockHistoryRepository.findAll()).hasSize(command.productVariants().size());
 
-    StockHistory history = stockHistoryRepository.findAll().getFirst();
-
-    assertThat(history.getProductId()).isEqualTo(stock.getProductId());
-    assertThat(history.getChangedQuantity()).isEqualTo(stock.getQuantity());
-    assertThat(history.getEventType()).isEqualTo(StockEventType.INBOUND);
+    // then 4. 반환값 검증
+    assertThat(response.productId()).isEqualTo(command.productId());
   }
 }

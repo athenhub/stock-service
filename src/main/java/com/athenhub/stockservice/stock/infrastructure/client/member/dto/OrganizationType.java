@@ -1,4 +1,4 @@
-package com.athenhub.stockservice.stock.infrastructure.client.member;
+package com.athenhub.stockservice.stock.infrastructure.client.member.dto;
 
 /**
  * 회원이 속한 조직 유형을 나타내는 열거형이다.
