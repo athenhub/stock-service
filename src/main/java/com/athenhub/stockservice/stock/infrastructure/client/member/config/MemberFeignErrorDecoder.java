@@ -29,7 +29,6 @@ public class MemberFeignErrorDecoder implements ErrorDecoder {
   public Exception decode(String methodKey, Response response) {
 
     return switch (response.status()) {
-
         // 잘못된 요청 (클라이언트 요청 값이 유효하지 않은 경우)
       case 400 -> new MemberFeignException(GlobalErrorCode.BAD_REQUEST, "요청한 회원 정보가 올바르지 않습니다.");
 

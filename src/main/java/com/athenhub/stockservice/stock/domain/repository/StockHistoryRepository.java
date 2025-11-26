@@ -17,5 +17,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface StockHistoryRepository extends JpaRepository<StockHistory, StockHistoryId> {
 
+  /**
+   * 특정 주문에 대한 재고 이력이 이미 존재하는지 확인한다.
+   *
+   * <p>주로 중복 주문 처리, 멱등성(Idempotency) 보장을 위해 동일한 주문에 대해 재고 감소가 한 번만 처리되었는지를 검증할 때 사용된다.
+   *
+   * @param orderId 주문 ID
+   * @return 재고 이력이 이미 존재하면 {@code true}, 존재하지 않으면 {@code false}
+   * @author 김지원
+   * @since 1.0.0
+   */
   boolean existsByOrderId(OrderId orderId);
 }

@@ -43,7 +43,7 @@ public class StockHistory extends AbstractTimeEntity {
   /** 재고 이력 식별자. */
   @EmbeddedId private StockHistoryId id;
 
-  /** 주문 이력 식별자. */
+  /** 주문 식별자 (재고 등록 시에는 null 가능). */
   @Embedded private OrderId orderId;
 
   /** 재고 식별자. */
@@ -69,9 +69,12 @@ public class StockHistory extends AbstractTimeEntity {
    *
    * @param changedQuantity 변경된 재고 수량 (0 불가)
    * @param stockId 재고 식별자
+   * @param orderId 주문 식별자 (nullable)
    * @param productId 상품 식별자
    * @param variantId 상품 옵션 식별자
    * @param eventType 재고 변동 이벤트 유형
+   * @author 김지원
+   * @since 1.0.0
    */
   private StockHistory(
       int changedQuantity,
@@ -86,7 +89,7 @@ public class StockHistory extends AbstractTimeEntity {
     validateQuantitySign(changedQuantity, eventType);
 
     this.id = StockHistoryId.create();
-    this.orderId = orderId; // 재고 등록시에는 주문 번호가 없다.(nullable)
+    this.orderId = orderId; // 재고 등록 시에는 주문 정보가 없다.
     this.stockId = Objects.requireNonNull(stockId);
     this.productId = Objects.requireNonNull(productId);
     this.variantId = Objects.requireNonNull(variantId);
@@ -94,17 +97,42 @@ public class StockHistory extends AbstractTimeEntity {
     this.changedQuantity = changedQuantity;
   }
 
+  /**
+   * 주문과 무관한 재고 변경 이력을 생성한다.
+   *
+   * <p>주로 초기 입고, 수동 재고 조정 등에서 사용된다.
+   *
+   * @param changedQuantity 변경된 재고 수량
+   * @param stockId 재고 식별자
+   * @param productId 상품 식별자
+   * @param variantId 상품 옵션 식별자
+   * @param eventType 재고 변동 이벤트 유형
+   * @return 생성된 StockHistory
+   * @author 김지원
+   * @since 1.0.0
+   */
   public static StockHistory of(
       int changedQuantity,
       StockId stockId,
       ProductId productId,
       ProductVariantId variantId,
       StockEventType eventType) {
+
     return new StockHistory(changedQuantity, stockId, null, productId, variantId, eventType);
   }
 
+  /**
+   * 입고(INBOUND) 이력을 생성한다.
+   *
+   * @param stock 재고 엔티티
+   * @param quantity 입고 수량
+   * @return 생성된 StockHistory
+   * @author 김지원
+   * @since 1.0.0
+   */
   public static StockHistory inbound(Stock stock, int quantity) {
     StockEventType inbound = StockEventType.INBOUND;
+
     return new StockHistory(
         inbound.signed(quantity),
         stock.getId(),
@@ -114,8 +142,19 @@ public class StockHistory extends AbstractTimeEntity {
         inbound);
   }
 
+  /**
+   * 출고(OUTBOUND) 이력을 생성한다.
+   *
+   * @param stock 재고 엔티티
+   * @param orderId 주문 식별자
+   * @param quantity 출고 수량
+   * @return 생성된 StockHistory
+   * @author 김지원
+   * @since 1.0.0
+   */
   public static StockHistory outbound(Stock stock, OrderId orderId, int quantity) {
     StockEventType type = StockEventType.OUTBOUND;
+
     return new StockHistory(
         type.signed(quantity),
         stock.getId(),
@@ -126,11 +165,12 @@ public class StockHistory extends AbstractTimeEntity {
   }
 
   /**
-   * 이벤트 타입 null 여부를 검증한다.
-   *
-   * <p>eventType은 반드시 존재해야 하며, null일 경우 예외를 발생시킨다.
+   * 이벤트 타입의 null 여부를 검증한다.
    *
    * @param eventType 재고 변동 이벤트 유형
+   * @throws NullPointerException eventType이 null인 경우
+   * @author 김지원
+   * @since 1.0.0
    */
   private void validateEventTypeNotNull(StockEventType eventType) {
     Objects.requireNonNull(eventType, "EventType 은 null 이 되어서는 안됩니다.");
@@ -142,6 +182,9 @@ public class StockHistory extends AbstractTimeEntity {
    * <p>재고 변경은 반드시 증가 또는 감소가 있어야 하므로 0은 허용되지 않는다.
    *
    * @param changedQuantity 변경된 재고 수량
+   * @throws IllegalArgumentException 변경 수량이 0인 경우
+   * @author 김지원
+   * @since 1.0.0
    */
   private void validateQuantityNotZero(int changedQuantity) {
     if (changedQuantity == 0) {
@@ -152,8 +195,6 @@ public class StockHistory extends AbstractTimeEntity {
   /**
    * 이벤트 유형에 따른 수량 부호의 유효성을 검증한다.
    *
-   * <p>재고 변동 유형(입고/출고/취소)에 따라 변경 수량의 부호(양수/음수)가 올바른지 검증한다.
-   *
    * <ul>
    *   <li>입고(INBOUND) : 양수만 허용
    *   <li>출고(OUTBOUND) : 음수만 허용
@@ -162,6 +203,8 @@ public class StockHistory extends AbstractTimeEntity {
    *
    * @param changedQuantity 변경된 재고 수량
    * @param eventType 재고 변동 이벤트 유형
+   * @author 김지원
+   * @since 1.0.0
    */
   private void validateQuantitySign(int changedQuantity, StockEventType eventType) {
     validateInboundQuantitySign(eventType, changedQuantity);
@@ -172,10 +215,11 @@ public class StockHistory extends AbstractTimeEntity {
   /**
    * 출고(OUTBOUND) 이벤트의 수량 부호를 검증한다.
    *
-   * <p>출고는 재고 감소를 의미하므로 음수 수량만 허용된다.
-   *
    * @param eventType 재고 변동 이벤트 유형
    * @param changedQuantity 변경된 재고 수량
+   * @throws IllegalArgumentException 출고 시 양수인 경우
+   * @author 김지원
+   * @since 1.0.0
    */
   private void validateOutboundQuantitySign(StockEventType eventType, int changedQuantity) {
     if (eventType.isOutbound() && changedQuantity > 0) {
@@ -186,10 +230,11 @@ public class StockHistory extends AbstractTimeEntity {
   /**
    * 주문 취소(CANCEL) 이벤트의 수량 부호를 검증한다.
    *
-   * <p>주문 취소는 재고 증가를 의미하므로 양수 수량만 허용된다.
-   *
    * @param eventType 재고 변동 이벤트 유형
    * @param changedQuantity 변경된 재고 수량
+   * @throws IllegalArgumentException 취소 시 음수인 경우
+   * @author 김지원
+   * @since 1.0.0
    */
   private void validateCancelQuantitySign(StockEventType eventType, int changedQuantity) {
     if (eventType.isCancel() && changedQuantity < 0) {
@@ -200,10 +245,11 @@ public class StockHistory extends AbstractTimeEntity {
   /**
    * 입고(INBOUND) 이벤트의 수량 부호를 검증한다.
    *
-   * <p>입고는 재고 증가를 의미하므로 양수 수량만 허용된다.
-   *
    * @param eventType 재고 변동 이벤트 유형
    * @param changedQuantity 변경된 재고 수량
+   * @throws IllegalArgumentException 입고 시 음수인 경우
+   * @author 김지원
+   * @since 1.0.0
    */
   private void validateInboundQuantitySign(StockEventType eventType, int changedQuantity) {
     if (eventType.isInbound() && changedQuantity < 0) {

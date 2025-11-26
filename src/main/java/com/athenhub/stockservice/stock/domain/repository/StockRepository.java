@@ -1,10 +1,8 @@
 package com.athenhub.stockservice.stock.domain.repository;
 
 import com.athenhub.stockservice.stock.domain.Stock;
-import com.athenhub.stockservice.stock.domain.vo.ProductId;
 import com.athenhub.stockservice.stock.domain.vo.ProductVariantId;
 import com.athenhub.stockservice.stock.domain.vo.StockId;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -22,7 +20,15 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StockRepository extends JpaRepository<Stock, StockId> {
 
-  List<Stock> findByProductId(ProductId productId);
-
+  /**
+   * 상품 옵션(Variant) ID를 기준으로 재고를 조회한다.
+   *
+   * <p>특정 상품 옵션에 대한 현재 재고 정보를 조회할 때 사용되며, 존재하지 않는 경우 {@link Optional#empty()}가 반환된다.
+   *
+   * @param variantId 상품 옵션(Variant) ID
+   * @return 해당 옵션의 재고 정보
+   * @author 김지원
+   * @since 1.0.0
+   */
   Optional<Stock> findByVariantId(ProductVariantId variantId);
 }
