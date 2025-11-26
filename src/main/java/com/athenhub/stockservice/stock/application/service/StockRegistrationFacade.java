@@ -33,7 +33,7 @@ public class StockRegistrationFacade {
   private final ProductAccessPermissionValidator permissionValidator;
   private final BelongsToValidator belongsToValidator;
   private final ProductVariantConsistencyValidator productVariantConsistencyValidator;
-  public final RegisterStockService registerStockService;
+  private final RegisterStockService registerStockService;
 
   /**
    * 재고 등록을 수행한다.
