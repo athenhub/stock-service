@@ -21,6 +21,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *     decreased:
  *       queue: stock.decreased.queue
  *       routing-key: stock.decreased
+ *     decreased-fail:
+ *       queue: stock.decreased.fail.queue
+ *       routing-key: stock.decreased.fail
  * </pre>
  *
  * <p>주요 설정 값:
@@ -31,6 +34,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *   <li>{@code registered.routing-key} : 재고 등록 이벤트 Routing Key
  *   <li>{@code decreased.queue} : 재고 감소 이벤트 Queue 이름
  *   <li>{@code decreased.routing-key} : 재고 감소 이벤트 Routing Key
+ *   <li>{@code decreased-fail.queue} : 재고 감소 실패 이벤트 Queue 이름
+ *   <li>{@code decreased-fail.routing-key} : 재고 감소 실패 이벤트 Routing Key
  * </ul>
  *
  * @author 김지원
@@ -49,6 +54,9 @@ public class RabbitStockProperties {
   /** 재고 감소(StockDecreasedEvent) 관련 설정. */
   private Decreased decreased;
 
+  /** 재고 감소 실패(StockDecreaseFailedEvent) 관련 설정. */
+  private DecreaseFail decreaseFail;
+
   /**
    * 재고 등록 이벤트 관련 설정이다.
    *
@@ -62,6 +70,22 @@ public class RabbitStockProperties {
     private String queue;
 
     /** 재고 등록 이벤트용 Routing Key. */
+    private String routingKey;
+  }
+
+  /**
+   * 재고 감소 실패 이벤트 관련 설정이다.
+   *
+   * @author 김지원
+   * @since 1.0.0
+   */
+  @Data
+  public static class DecreaseFail {
+
+    /** 재고 감소 실패 이벤트를 처리하는 Queue 이름. */
+    private String queue;
+
+    /** 재고 감소 실패 이벤트용 Routing Key. */
     private String routingKey;
   }
 

@@ -27,9 +27,11 @@ rabbit:
     decreased:
       routing-key: stock.decreased
       queue: stock.decreased.queue
+    decrease-fail:
+      routing-key: stock.decrease.fail
+      queue: stock.decreased.fail.queue
   order:
     exchange: order.exchange
     created:
       routing-key: order.created
       queue: order.created.queue
-

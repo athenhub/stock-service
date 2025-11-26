@@ -115,4 +115,28 @@ public class RabbitStockConfig {
         .to(stockExchange)
         .with(stockProperties.getDecreased().getRoutingKey());
   }
+
+  @Bean
+  public Queue stockDecreaseFailQueue() {
+    return QueueBuilder.durable(stockProperties.getDecreaseFail().getQueue()).build();
+  }
+
+  /**
+   * 재고 감소 이벤트용 Binding.
+   *
+   * <p>Exchange로 들어온 재고 감소 이벤트를 지정된 Queue로 라우팅한다.
+   *
+   * @param stockDecreasedQueue 재고 감소 이벤트 Queue
+   * @param stockExchange Stock Topic Exchange
+   * @return 재고 감소 이벤트 Binding
+   * @author 김지원
+   * @since 1.0.0
+   */
+  @Bean
+  public Binding stockDecreaseFailBinding(
+      Queue stockDecreaseFailQueue, TopicExchange stockExchange) {
+    return BindingBuilder.bind(stockDecreaseFailQueue)
+        .to(stockExchange)
+        .with(stockProperties.getDecreaseFail().getRoutingKey());
+  }
 }
