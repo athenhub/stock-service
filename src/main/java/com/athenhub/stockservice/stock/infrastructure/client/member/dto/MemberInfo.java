@@ -22,5 +22,5 @@ public record MemberInfo(
     String organizationName,
     MemberRole role,
     MemberStatus status,
-    LocalDateTime deletedAt,
-    String deletedBy) {}
+    boolean isActivated
+    ) {}
