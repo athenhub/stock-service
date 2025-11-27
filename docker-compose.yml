@@ -6,6 +6,20 @@ services:
       - POSTGRES_USER=athenhub
       - POSTGRES_PASSWORD=@@Athenhub01
     ports:
-      - '5432:5432'
+      - '543:5432'
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  rabbitmq:
+    image: rabbitmq:3.11-management
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"      # AMQP
+      - "15672:15672"    # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: _aA123456
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+volumes:
+  rabbitmq-data:

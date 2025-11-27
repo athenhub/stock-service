@@ -21,3 +21,27 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: ${EUREKA_SERVICE_URL}
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+
+rabbit:
+  stock:
+    exchange: athenhub.stock.exchange
+    registered:
+      routing-key: athenhub.stock.registered
+      queue: athenhub.stock.registered.queue
+    decreased:
+      routing-key: athenhub.stock.decreased
+      queue: athenhub.stock.decreased.queue
+    decrease-fail:
+      routing-key: athenhub.stock.decrease.fail
+      queue: athenhub.stock.decreased.fail.queue
+  order:
+    exchange: athenhub.order.exchange
+    created:
+      routing-key: athenhub.order.created
+      queue: athenhub.order.created.queue

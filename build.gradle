@@ -72,7 +72,7 @@ dependencies {
     implementation 'org.postgresql:postgresql'
 
     // common
-    implementation 'com.athenhub:common-mvc:1.2.0'
+    implementation 'com.athenhub:common-mvc:1.4.1'
 
     // lombok
     compileOnly 'org.projectlombok:lombok'
@@ -87,6 +87,13 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // open feign
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+    // RabbitMQ
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    implementation 'org.springframework.amqp:spring-rabbit-stream'
 
     // mockito javaagent
     mockitoAgent('org.mockito:mockito-core') {
