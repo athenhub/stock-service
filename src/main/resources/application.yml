@@ -23,25 +23,25 @@ eureka:
       defaultZone: ${EUREKA_SERVICE_URL}
 
   rabbitmq:
-    host: localhost                 # RabbitMQ 브로커의 호스트명 또는 IP. 로컬 테스트 시 'localhost' 사용.
-    port: 5672                      # AMQP 포트(기본 5672). 브로커가 다른 포트를 쓰면 해당 포트로 설정.
-    username: ${RABBITMQ_USERNAME}                # 연결에 사용할 사용자 계정명. 운영 환경에서는 비밀 관리 도구로 보관 권장.
-    password: ${RABBITMQ_PASSWORD}            # 사용자 비밀번호. 절대 코드/레포지토리에 평문 저장 금지(환경변수/Vault 사용 권장).
+    host: localhost
+    port: 5672
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
 
 rabbit:
   stock:
-    exchange: stock.exchange
+    exchange: athenhub.stock.exchange
     registered:
-      routing-key: stock.registered
-      queue: stock.registered.queue
+      routing-key: athenhub.stock.registered
+      queue: athenhub.stock.registered.queue
     decreased:
-      routing-key: stock.decreased
-      queue: stock.decreased.queue
+      routing-key: athenhub.stock.decreased
+      queue: athenhub.stock.decreased.queue
     decrease-fail:
-      routing-key: stock.decrease.fail
-      queue: stock.decreased.fail.queue
+      routing-key: athenhub.stock.decrease.fail
+      queue: athenhub.stock.decreased.fail.queue
   order:
-    exchange: order.exchange
+    exchange: athenhub.order.exchange
     created:
-      routing-key: order.created
-      queue: order.created.queue
+      routing-key: athenhub.order.created
+      queue: athenhub.order.created.queue
