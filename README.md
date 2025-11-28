@@ -149,10 +149,3 @@ rabbit:
 > stock.registered — 재고가 등록될 때 발생하는 이벤트 <br>
 > stock.decreased — 정상적으로 재고가 감소했을 때 발생하는 이벤트 <br>
 > stock.decrease.fail — 재고 감소가 실패했을 때 발행되는 보상/실패 이벤트
-
-## 빌드 및 실행(Build & Run)
-
-```
-./gradlew clean build
-java -jar build/libs/stock-service.jar
-```
