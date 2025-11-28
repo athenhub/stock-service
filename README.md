@@ -124,7 +124,6 @@ stockservice/
 
 - ApplicationEvents 기반 Domain Event 검증
 - SpringBootTest 기반 통합 테스트 구성
-
 ## RabbitMQ 큐 설정 설정(Configuration)
 
 ### application.yml 예시
