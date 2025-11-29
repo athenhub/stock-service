@@ -14,7 +14,7 @@ import java.util.UUID;
  * @author 김지원
  * @since 1.0.0
  */
-public record StockDecreasedEvent(
+public record StockDecreaseSuccessEvent(
 
     /** 재고 감소를 발생시킨 주문 ID. */
     UUID orderId,
@@ -30,7 +30,7 @@ public record StockDecreasedEvent(
    * @author 김지원
    * @since 1.0.0
    */
-  public static StockDecreasedEvent of(UUID orderId) {
-    return new StockDecreasedEvent(orderId, LocalDateTime.now());
+  public static StockDecreaseSuccessEvent of(UUID orderId) {
+    return new StockDecreaseSuccessEvent(orderId, LocalDateTime.now());
   }
 }

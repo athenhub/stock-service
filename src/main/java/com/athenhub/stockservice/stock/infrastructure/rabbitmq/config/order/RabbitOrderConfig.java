@@ -1,4 +1,4 @@
-package com.athenhub.stockservice.stock.infrastructure.rabbitmq.subcribe.order;
+package com.athenhub.stockservice.stock.infrastructure.rabbitmq.config.order;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.Binding;

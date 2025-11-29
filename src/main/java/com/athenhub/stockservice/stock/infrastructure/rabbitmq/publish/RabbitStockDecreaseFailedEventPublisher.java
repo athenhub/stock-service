@@ -2,6 +2,7 @@ package com.athenhub.stockservice.stock.infrastructure.rabbitmq.publish;
 
 import com.athenhub.stockservice.stock.application.service.StockDecreaseFailedEventPublisher;
 import com.athenhub.stockservice.stock.domain.event.external.StockDecreaseFailedEvent;
+import com.athenhub.stockservice.stock.infrastructure.rabbitmq.config.stock.RabbitStockProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -38,6 +39,6 @@ public class RabbitStockDecreaseFailedEventPublisher implements StockDecreaseFai
   @Override
   public void publish(StockDecreaseFailedEvent event) {
     rabbitTemplate.convertAndSend(
-        stockProperties.getExchange(), stockProperties.getDecreaseFail().getRoutingKey(), event);
+        stockProperties.getExchange(), stockProperties.getDecreaseDead().getRoutingKey(), event);
   }
 }

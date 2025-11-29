@@ -1,4 +1,4 @@
-package com.athenhub.stockservice.stock.domain.dto;
+package com.athenhub.stockservice.stock.application.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

@@ -1,4 +1,7 @@
 spring:
+  config:
+    activate:
+      on-profile: local
   cloud:
     config:
       enabled: false
@@ -24,12 +27,19 @@ rabbit:
     registered:
       routing-key: stock.registered
       queue: stock.registered.queue
-    decreased:
-      routing-key: stock.decreased
+    decrease:
+      routing-key: stock.decrease
       queue: stock.decreased.queue
-    decrease-fail:
-      routing-key: stock.decrease.fail
-      queue: stock.decreased.fail.queue
+    decrease-retry:
+      routing-key: stock.decrease.retry
+      queue: stock.decreased.retry.queue
+      ttl: 500
+    decrease-dead:
+      routing-key: stock.decrease.dead
+      queue: stock.decreased.dead.queue
+    decrease-success:
+      routing-key: stock.decrease.success
+      queue: stock.decrease.success.queue
   order:
     exchange: order.exchange
     created:

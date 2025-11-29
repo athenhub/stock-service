@@ -1,8 +1,10 @@
 spring:
-  application:
-    name: stock-service
   config:
     import: 'optional:configserver:'
+    activate:
+      on-profile: prod
+  application:
+    name: stock-service
   cloud:
     config:
       discovery:

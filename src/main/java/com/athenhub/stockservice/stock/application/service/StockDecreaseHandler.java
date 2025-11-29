@@ -1,10 +1,10 @@
 package com.athenhub.stockservice.stock.application.service;
 
+import com.athenhub.stockservice.stock.application.dto.StockDecreaseRequest;
 import com.athenhub.stockservice.stock.domain.Stock;
 import com.athenhub.stockservice.stock.domain.StockHistory;
-import com.athenhub.stockservice.stock.domain.dto.StockDecreaseRequest;
 import com.athenhub.stockservice.stock.domain.event.external.StockDecreaseFailedEvent;
-import com.athenhub.stockservice.stock.domain.event.external.StockDecreasedEvent;
+import com.athenhub.stockservice.stock.domain.event.external.StockDecreaseSuccessEvent;
 import com.athenhub.stockservice.stock.domain.repository.StockHistoryRepository;
 import com.athenhub.stockservice.stock.domain.repository.StockRepository;
 import com.athenhub.stockservice.stock.domain.vo.OrderId;
@@ -41,7 +41,7 @@ public class StockDecreaseHandler {
 
   private final StockRepository stockRepository;
   private final StockHistoryRepository stockHistoryRepository;
-  private final StockDecreasedEventPublisher stockDecreasedEventPublisher;
+  private final StockDecreaseSuccessEventPublisher stockDecreasedEventPublisher;
   private final StockDecreaseFailedEventPublisher stockDecreaseFailedEventPublisher;
 
   /**
@@ -134,6 +134,6 @@ public class StockDecreaseHandler {
    * @since 1.0.0
    */
   private void publishEvent(UUID orderId) {
-    stockDecreasedEventPublisher.publish(StockDecreasedEvent.of(orderId));
+    stockDecreasedEventPublisher.publish(StockDecreaseSuccessEvent.of(orderId));
   }
 }
