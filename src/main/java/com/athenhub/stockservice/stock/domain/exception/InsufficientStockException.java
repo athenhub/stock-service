@@ -15,7 +15,7 @@ import com.athenhub.stockservice.stock.application.exception.ApplicationErrorCod
  * @author 김지원
  * @since 1.0.0
  */
-public class StockDomainException extends AbstractServiceException {
+public class InsufficientStockException extends AbstractServiceException {
 
   /**
    * 지정된 에러 코드를 기반으로 재고 도메인 예외를 생성한다.
@@ -23,7 +23,11 @@ public class StockDomainException extends AbstractServiceException {
    * @param errorCode 재고 도메인에서 정의한 에러 코드
    * @param errorArgs 에러 메시지에 전달할 추가 인자
    */
-  public StockDomainException(ErrorCode errorCode, Object... errorArgs) {
+  public InsufficientStockException(ErrorCode errorCode, Object... errorArgs) {
     super(errorCode, errorArgs);
+  }
+
+  public InsufficientStockException(ErrorCode errorCode, String message, Object... errorArgs) {
+    super(errorCode, message, errorArgs);
   }
 }
