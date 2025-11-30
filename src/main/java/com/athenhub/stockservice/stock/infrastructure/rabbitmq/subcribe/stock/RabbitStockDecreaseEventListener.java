@@ -2,7 +2,6 @@ package com.athenhub.stockservice.stock.infrastructure.rabbitmq.subcribe.stock;
 
 import com.athenhub.stockservice.stock.application.dto.StockDecreaseBatchEvent;
 import com.athenhub.stockservice.stock.application.service.StockDecreaseHandler;
-import com.athenhub.stockservice.stock.infrastructure.rabbitmq.parser.StockDecreaseMessageParser;
 import com.rabbitmq.client.Channel;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
@@ -18,44 +17,65 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RabbitStockDecreaseEventListener {
 
-  private static final int RETRY_COUNT = 5;
+  private static final int RETRY_MAX = 5;
 
-  private final StockDecreaseMessageParser parser;
   private final RetryManager retryManager;
   private final StockDecreaseHandler handler;
 
-  @RabbitListener(queues = "${rabbit.stock.decrease.queue}")
-  public void listen(Message message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag)
+  @RabbitListener(queues = "${rabbit.stock.decrease.queue}", containerFactory = "manualAckFactory")
+  public void listen(
+      StockDecreaseBatchEvent event,
+      Message rawMessage,
+      Channel channel,
+      @Header(AmqpHeaders.DELIVERY_TAG) long tag)
       throws IOException {
 
-    int retry = retryManager.getRetryCount(message);
+    final String queueName = rawMessage.getMessageProperties().getConsumerQueue();
+    final int retry = retryManager.getRetryCount(rawMessage);
 
-    // 1. 역직렬화
-    StockDecreaseBatchEvent event;
-    try {
-      event = parser.parse(message);
-    } catch (Exception ex) {
-      log.error("역직렬화 실패 → DLQ", ex);
-      retryManager.sendRawToDlq(message);
-      channel.basicAck(tag, false);
-      return;
-    }
+    log.info("[RECEIVED] queue={} retry={} orderId={}", queueName, retry, event.orderId());
 
-    // 2. 비즈니스 로직 실행
     try {
+      log.info(
+          "[PROCESS] 재고 감소 처리 시작 orderId={} items={}",
+          event.orderId(),
+          event.stockDecreaseRequests().size());
+
       handler.decreaseAll(event.orderId(), event.stockDecreaseRequests());
-      channel.basicAck(tag, false);
-    } catch (Exception ex) {
-      log.error("재고 감소 실패 retry={}, event={}", retry, event, ex);
 
-      if (retry >= RETRY_COUNT) {
+      log.info("[SUCCESS] 재고 감소 완료 orderId={}", event.orderId());
+
+      channel.basicAck(tag, false);
+      log.info("[ACK] 메시지 정상 처리 완료 orderId={} tag={}", event.orderId(), tag);
+    } catch (Exception ex) {
+
+      log.error(
+          "[ERROR] 재고 감소 실패 orderId={} retry={} cause={}",
+          event.orderId(),
+          retry,
+          ex.getMessage(),
+          ex);
+
+      int nextRetry = retry + 1;
+
+      // 1) 최대 재시도 초과 → DLQ
+      if (nextRetry > RETRY_MAX) {
+        log.warn("[DLQ] 재시도 초과({}) → DLQ 이동 orderId={}", RETRY_MAX, event.orderId());
+
         retryManager.sendToDlq(event, retry);
         channel.basicAck(tag, false);
+
+        log.info("[ACK] DLQ 전송 후 ACK 처리 완료 orderId={} tag={}", event.orderId(), tag);
         return;
       }
 
-      retryManager.increaseRetryCount(message);
-      channel.basicReject(tag, false);
+      // 2) retry 가능한 예외 → retry 큐 재발행
+      log.warn("[RETRY] 재고 감소 재시도 준비 nextRetry={} orderId={}", nextRetry, event.orderId());
+
+      retryManager.sendToRetry(event, nextRetry);
+
+      channel.basicAck(tag, false);
+      log.info("[ACK] 원본 메시지 ACK 처리 완료 (retry 발행 완료) orderId={} tag={}", event.orderId(), tag);
     }
   }
 }

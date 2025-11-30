@@ -1,4 +1,8 @@
 spring:
+  rabbitmq:
+    listener:
+      simple:
+        acknowledge-mode: manual
   config:
     activate:
       on-profile: local
@@ -8,12 +12,12 @@ spring:
   jpa:
     properties:
       hibernate:
-        show_sql: true
+        show_sql: false
         format_sql: true
         use_sql_comments: true
         default_schema:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     open-in-view: false
     generate-ddl: true
 
@@ -37,7 +41,7 @@ rabbit:
     decrease-retry:
       routing-key: stock.decrease.retry
       queue: stock.decrease.retry.queue
-      ttl: 500
+      ttl: 1000
 
     decrease-dead:
       routing-key: stock.decrease.dead

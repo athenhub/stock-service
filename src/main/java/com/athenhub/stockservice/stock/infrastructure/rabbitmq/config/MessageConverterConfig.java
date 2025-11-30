@@ -1,5 +1,8 @@
-package com.athenhub.stockservice.stock.infrastructure;
+package com.athenhub.stockservice.stock.infrastructure.rabbitmq.config;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +29,13 @@ public class MessageConverterConfig {
    */
   @Bean
   public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
-    return new Jackson2JsonMessageConverter();
+    return new Jackson2JsonMessageConverter(rabbitObjectMapper());
+  }
+
+  public ObjectMapper rabbitObjectMapper() {
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.registerModule(new JavaTimeModule());
+    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    return mapper;
   }
 }
