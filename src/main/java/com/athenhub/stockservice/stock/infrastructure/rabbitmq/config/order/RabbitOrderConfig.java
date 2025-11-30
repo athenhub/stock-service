@@ -11,9 +11,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Order 도메인 관련 RabbitMQ 설정 클래스이다.
+ * Order 도메인에서 사용하는 RabbitMQ Exchange, Queue, Binding 설정을 정의하는 구성 클래스이다.
  *
- * <p>Order 서비스에서 발생하는 주문 생성 이벤트를 재고 서비스가 구독하기 위해 Exchange, Queue, Binding 정보를 정의한다.
+ * <p>{@link RabbitOrderProperties}의 설정 값을 기반으로 주문 생성 이벤트 및 주문 처리 실패 이벤트(OrderProcessFailedEvent)를
+ * 수신하기 위한 메시징 인프라를 등록한다.
+ *
+ * <p>주문 생성 이벤트는 재고 감소 요청 등의 후속 프로세스를 시작하는 역할을 하며, 주문 처리 실패 이벤트는 재고·결제·배송 등 외부 도메인의 실패를 Order 서비스가
+ * 수신하여 보상 트랜잭션 또는 주문 상태 전환을 수행하도록 돕는다.
  *
  * @author 김지원
  * @since 1.0.0
@@ -26,30 +30,19 @@ public class RabbitOrderConfig {
   private final RabbitOrderProperties orderProperties;
 
   /**
-   * 주문(Order) 관련 이벤트를 수신하기 위한 Topic Exchange.
+   * Order 서비스 이벤트를 발행/수신하기 위한 Topic Exchange를 생성한다.
    *
-   * <p>예: order.exchange
-   *
-   * @return 주문 이벤트용 TopicExchange
-   * @author 김지원
-   * @since 1.0.0
+   * @return 주문 관련 이벤트용 TopicExchange.
    */
   @Bean
   public TopicExchange orderExchange() {
-    return new TopicExchange(
-        orderProperties.getExchange(), // 예: order.exchange
-        true,
-        false);
+    return new TopicExchange(orderProperties.getExchange(), true, false);
   }
 
   /**
-   * 주문 생성 이벤트를 수신하는 Queue.
+   * 주문 생성 이벤트(OrderCreatedEvent)를 수신하는 Queue를 생성한다.
    *
-   * <p>예: order.created.queue
-   *
-   * @return 주문 생성 이벤트 수신용 Queue
-   * @author 김지원
-   * @since 1.0.0
+   * @return 주문 생성 이벤트용 Queue.
    */
   @Bean
   public Queue orderCreatedQueue() {
@@ -57,20 +50,38 @@ public class RabbitOrderConfig {
   }
 
   /**
-   * 주문 생성 이벤트용 Binding.
+   * 주문 생성 이벤트 Queue와 Exchange를 Routing Key 기반으로 Binding한다.
    *
-   * <p>order.exchange 에서 order.created 라우팅 키로 들어오는 메시지를 order.created.queue 로 전달한다.
-   *
-   * @param orderCreatedQueue 주문 생성 이벤트 Queue
-   * @param orderExchange 주문 이벤트용 Topic Exchange
-   * @return Queue 와 Exchange 를 연결하는 Binding
-   * @author 김지원
-   * @since 1.0.0
+   * @return 주문 생성 이벤트용 Binding.
    */
   @Bean
-  public Binding orderCreateBinding(Queue orderCreatedQueue, TopicExchange orderExchange) {
-    return BindingBuilder.bind(orderCreatedQueue)
-        .to(orderExchange)
+  public Binding orderCreateBinding() {
+    return BindingBuilder.bind(orderCreatedQueue())
+        .to(orderExchange())
         .with(orderProperties.getCreated().getRoutingKey());
+  }
+
+  /**
+   * 주문 처리 실패 이벤트(OrderProcessFailedEvent)를 수신하는 Queue를 생성한다.
+   *
+   * <p>해당 Queue는 재고 감소 실패뿐 아니라 결제 실패, 배송 실패 등 전체 주문 처리 플로우에서 발생한 모든 도메인 실패 이벤트를 수신한다.
+   *
+   * @return 주문 처리 실패 이벤트용 Queue.
+   */
+  @Bean
+  public Queue orderProcessFailQueue() {
+    return QueueBuilder.durable(orderProperties.getProcessFailed().getQueue()).build();
+  }
+
+  /**
+   * 주문 처리 실패 이벤트 Queue와 Exchange를 Routing Key 기반으로 Binding한다.
+   *
+   * @return 주문 처리 실패 이벤트용 Binding.
+   */
+  @Bean
+  public Binding orderProcessFailBinding() {
+    return BindingBuilder.bind(orderProcessFailQueue())
+        .to(orderExchange())
+        .with(orderProperties.getProcessFailed().getRoutingKey());
   }
 }

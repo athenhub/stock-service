@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 import com.athenhub.stockservice.stock.domain.dto.InitialStock;
+import com.athenhub.stockservice.stock.domain.exception.InsufficientStockException;
 import com.athenhub.stockservice.stock.fixture.StockFixture;
 import java.util.UUID;
 import org.assertj.core.api.Assertions;
@@ -73,7 +74,7 @@ class StockTest {
     Stock stock = StockFixture.createWithQuantity(10);
 
     assertThatThrownBy(() -> stock.decrease(11))
-        .isInstanceOf(IllegalStateException.class)
+        .isInstanceOf(InsufficientStockException.class)
         .hasMessage("재고가 부족합니다.");
   }
 }

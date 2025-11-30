@@ -55,3 +55,6 @@ rabbit:
     created:
       routing-key: order.created
       queue: order.created.queue
+    process-failed:
+      routing-key: order.process.failed
+      queue: order.process.failed.queue
