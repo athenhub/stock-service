@@ -1,6 +1,6 @@
 package com.athenhub.stockservice.stock.application.service;
 
-import com.athenhub.stockservice.stock.domain.event.external.StockDecreaseSuccessEvent;
+import com.athenhub.stockservice.stock.application.event.external.StockDecreaseSuccessEvent;
 
 /**
  * 재고 감소 이벤트를 발행하는 Publisher 인터페이스이다.

@@ -1,9 +1,9 @@
 package com.athenhub.stockservice.stock.application.service;
 
 import com.athenhub.stockservice.stock.application.dto.StockDecreaseRequest;
+import com.athenhub.stockservice.stock.application.event.external.StockDecreaseSuccessEvent;
 import com.athenhub.stockservice.stock.domain.Stock;
 import com.athenhub.stockservice.stock.domain.StockHistory;
-import com.athenhub.stockservice.stock.domain.event.external.StockDecreaseSuccessEvent;
 import com.athenhub.stockservice.stock.domain.repository.StockHistoryRepository;
 import com.athenhub.stockservice.stock.domain.repository.StockRepository;
 import com.athenhub.stockservice.stock.domain.vo.OrderId;
