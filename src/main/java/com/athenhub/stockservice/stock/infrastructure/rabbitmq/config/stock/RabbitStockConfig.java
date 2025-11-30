@@ -1,41 +1,17 @@
 package com.athenhub.stockservice.stock.infrastructure.rabbitmq.config.stock;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.QueueBuilder;
-import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.core.*;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Stock 도메인 관련 RabbitMQ 설정 클래스이다.
+ * RabbitMQ 설정 클래스.
  *
- * <p>재고 서비스에서 발행하는 이벤트를 처리하기 위해 Exchange, Queue, Binding 구성을 정의한다.
+ * <p>재고 감소 이벤트의 Main / Retry / DLQ 라우팅을 구성한다.
  *
- * <p>구성 요소:
- *
- * <ul>
- *   <li>Stock 이벤트용 Topic Exchange
- *   <li>재고 등록 이벤트 Queue 및 Binding
- *   <li>재고 감소 이벤트 Main Queue / Retry Queue / Dead Letter Queue 및 Binding
- * </ul>
- *
- * <p>메시지 흐름:
- *
- * <pre>
- *   [stock.decreased.queue] (Main)
- *           ↓ 실패 시 DLX
- *   [stock.decreased.retry.queue] (TTL 후 재시도)
- *           ↓ TTL 만료 시 DLX
- *   [stock.decreased.queue] (Main 재유입)
- *
- *   (최종 포기 시, 리스너에서 DeadLetter RoutingKey로 직접 발행)
- *           ↓
- *   [stock.decrease.dead.queue] (DLQ)
- * </pre>
+ * <p>DLQ는 별도 Exchange로 분리하여 장애 메시지를 격리한다.
  *
  * @author 김지원
  * @since 1.0.0
@@ -45,177 +21,74 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(RabbitStockProperties.class)
 public class RabbitStockConfig {
 
-  private final RabbitStockProperties stockProperties;
+  private final RabbitStockProperties props;
 
-  /**
-   * Stock 관련 이벤트를 발행하는 Topic Exchange이다.
-   *
-   * <p>예: {@code stock.exchange}
-   *
-   * @return Stock 이벤트용 TopicExchange
-   * @author 김지원
-   * @since 1.0.0
-   */
+  /** 정상 이벤트를 처리하는 메인 Exchange. */
   @Bean
   public TopicExchange stockExchange() {
-    return new TopicExchange(
-        stockProperties.getExchange(), // 예: stock.exchange
-        true, // durable
-        false // autoDelete
-        );
+    return new TopicExchange(props.getExchange(), true, false);
   }
 
-  /**
-   * 재고 등록 이벤트를 처리하기 위한 Queue이다.
-   *
-   * <p>예: {@code stock.registered.queue}
-   *
-   * @return 재고 등록 이벤트용 Queue Bean
-   * @author 김지원
-   * @since 1.0.0
-   */
+  /** 최종 실패 메시지를 수집하는 DLQ 전용 Exchange. */
   @Bean
-  public Queue stockRegisteredQueue() {
-    return QueueBuilder.durable(stockProperties.getRegistered().getQueue()).build();
+  public TopicExchange stockDlqExchange() {
+    return new TopicExchange(props.getDlqExchange(), true, false);
   }
 
   /**
-   * 재고 등록 이벤트용 Binding이다.
+   * 재고 감소 메인 Queue.
    *
-   * <p>Exchange로 발행된 재고 등록 이벤트를 등록 Queue로 라우팅한다.
-   *
-   * @param stockRegisteredQueue 재고 등록 이벤트 Queue
-   * @param stockExchange Stock Topic Exchange
-   * @return 재고 등록 이벤트 Binding Bean
-   * @author 김지원
-   * @since 1.0.0
-   */
-  @Bean
-  public Binding stockRegisteredBinding(Queue stockRegisteredQueue, TopicExchange stockExchange) {
-
-    return BindingBuilder.bind(stockRegisteredQueue)
-        .to(stockExchange)
-        .with(stockProperties.getRegistered().getRoutingKey());
-  }
-
-  /**
-   * 재고 감소 이벤트를 처리하기 위한 Main Queue이다.
-   *
-   * <p>예: {@code stock.decreased.queue}
-   *
-   * <p>리스너에서 처리 실패 시, Dead-Letter 설정을 통해 Retry Queue로 메시지를 이동시킨다.
-   *
-   * @return 재고 감소 이벤트용 Main Queue Bean
-   * @author 김지원
-   * @since 1.0.0
+   * <p>처리 실패 시 Retry Queue로 이동하도록 DLX를 설정한다.
    */
   @Bean
   public Queue stockDecreaseQueue() {
-    return QueueBuilder.durable(stockProperties.getDecrease().getQueue())
-        // 실패한 메시지를 Retry Queue로 전달하기 위한 DLX 설정
-        .withArgument("x-dead-letter-exchange", stockProperties.getExchange())
-        .withArgument(
-            "x-dead-letter-routing-key",
-            stockProperties.getDecreaseRetry().getRoutingKey()) // 실패 → Retry Queue로
+    return QueueBuilder.durable(props.getDecrease().getQueue())
+        .withArgument("x-dead-letter-exchange", props.getExchange())
+        .withArgument("x-dead-letter-routing-key", props.getDecreaseRetry().getRoutingKey())
         .build();
   }
 
-  /**
-   * 재고 감소 이벤트용 Main Queue Binding이다.
-   *
-   * <p>Exchange로 발행된 재고 감소 이벤트를 Main Queue로 라우팅한다.
-   *
-   * @param stockDecreaseQueue 재고 감소 이벤트 Main Queue
-   * @param stockExchange Stock Topic Exchange
-   * @return 재고 감소 이벤트 Main Queue Binding Bean
-   * @author 김지원
-   * @since 1.0.0
-   */
+  /** 메인 Queue 바인딩. */
   @Bean
-  public Binding stockDecreaseBinding(Queue stockDecreaseQueue, TopicExchange stockExchange) {
-
-    return BindingBuilder.bind(stockDecreaseQueue)
-        .to(stockExchange)
-        .with(stockProperties.getDecrease().getRoutingKey());
+  public Binding stockDecreaseBinding() {
+    return BindingBuilder.bind(stockDecreaseQueue())
+        .to(stockExchange())
+        .with(props.getDecrease().getRoutingKey());
   }
 
   /**
-   * 재고 감소 이벤트 재시도를 위한 Retry Queue이다.
+   * 재시도 처리를 위한 Retry Queue.
    *
-   * <p>예: {@code stock.decreased.retry.queue}
-   *
-   * <p>TTL이 지난 후 Dead-Letter 설정을 통해 다시 Main Queue로 메시지를 재전달한다.
-   *
-   * @return 재고 감소 이벤트 Retry Queue Bean
-   * @author 김지원
-   * @since 1.0.0
+   * <p>TTL 후 메인 Queue로 재유입된다.
    */
   @Bean
   public Queue stockDecreaseRetryQueue() {
-    return QueueBuilder.durable(stockProperties.getDecreaseRetry().getQueue())
-        // Retry 지연 처리용 TTL (ms 단위)
-        .withArgument("x-message-ttl", stockProperties.getDecreaseRetry().getTtl())
-        // TTL 만료 후 다시 Main Queue로 보내기 위한 DLX 설정
-        .withArgument("x-dead-letter-exchange", stockProperties.getExchange())
-        .withArgument(
-            "x-dead-letter-routing-key",
-            stockProperties.getDecrease().getRoutingKey()) // TTL 만료 → Main Queue로 재유입
+    return QueueBuilder.durable(props.getDecreaseRetry().getQueue())
+        .withArgument("x-message-ttl", props.getDecreaseRetry().getTtl())
+        .withArgument("x-dead-letter-exchange", props.getExchange())
+        .withArgument("x-dead-letter-routing-key", props.getDecrease().getRoutingKey())
         .build();
   }
 
-  /**
-   * 재고 감소 이벤트 Retry Queue Binding이다.
-   *
-   * <p>Exchange로 발행된 Retry용 RoutingKey를 Retry Queue에 바인딩한다.
-   *
-   * @param stockDecreaseRetryQueue 재고 감소 이벤트 Retry Queue
-   * @param stockExchange Stock Topic Exchange
-   * @return 재고 감소 이벤트 Retry Queue Binding Bean
-   * @author 김지원
-   * @since 1.0.0
-   */
+  /** Retry Queue 바인딩. */
   @Bean
-  public Binding stockDecreaseRetryBinding(
-      Queue stockDecreaseRetryQueue, TopicExchange stockExchange) {
-
-    return BindingBuilder.bind(stockDecreaseRetryQueue)
-        .to(stockExchange)
-        .with(stockProperties.getDecreaseRetry().getRoutingKey());
+  public Binding stockDecreaseRetryBinding() {
+    return BindingBuilder.bind(stockDecreaseRetryQueue())
+        .to(stockExchange())
+        .with(props.getDecreaseRetry().getRoutingKey());
   }
 
-  /**
-   * 재고 감소 이벤트 처리 실패 시 최종적으로 격리할 Dead Letter Queue이다.
-   *
-   * <p>예: {@code stock.decrease.dead.queue}
-   *
-   * <p>Retry를 모두 소진하거나, 리스너가 직접 포기한 메시지를 수집하는 용도로 사용한다.
-   *
-   * @return 재고 감소 이벤트 Dead Letter Queue Bean
-   * @author 김지원
-   * @since 1.0.0
-   */
+  /** 최종 실패 메시지를 격리하는 Dead Letter Queue. */
   @Bean
   public Queue stockDecreaseDeadLetterQueue() {
-    return QueueBuilder.durable(stockProperties.getDecreaseDead().getQueue()).build();
+    return QueueBuilder.durable(props.getDecreaseDead().getQueue()).build();
   }
 
-  /**
-   * 재고 감소 이벤트 Dead Letter Queue Binding이다.
-   *
-   * <p>Dead Letter용 RoutingKey에 따라 메시지를 DLQ로 라우팅한다.
-   *
-   * @param stockDecreaseDeadLetterQueue 재고 감소 이벤트 Dead Letter Queue
-   * @param stockExchange Stock Topic Exchange
-   * @return 재고 감소 이벤트 Dead Letter Queue Binding Bean
-   * @author 김지원
-   * @since 1.0.0
-   */
+  /** Dead Letter Queue 바인딩. */
   @Bean
-  public Binding stockDecreaseDeadLetterBinding(
-      Queue stockDecreaseDeadLetterQueue, TopicExchange stockExchange) {
-
-    return BindingBuilder.bind(stockDecreaseDeadLetterQueue)
-        .to(stockExchange)
-        .with(stockProperties.getDecreaseDead().getRoutingKey());
+  public Binding stockDecreaseDeadLetterBinding() {
+    return BindingBuilder.bind(stockDecreaseDeadLetterQueue())
+        .to(stockDlqExchange())
+        .with(props.getDecreaseDead().getRoutingKey());
   }
 }

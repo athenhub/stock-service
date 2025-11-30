@@ -62,6 +62,9 @@ public class RabbitStockProperties {
   /** 재고 관련 메시지를 발행/수신하기 위한 Exchange 이름(예: stock.exchange). */
   private String exchange;
 
+  /** 재고 감소 실패 메시지를 최종적으로 격리하기 위한 DLQ 전용 Exchange. */
+  private String dlqExchange;
+
   /** 재고 등록(StockRegisteredEvent) 이벤트 설정 그룹. */
   private Registered registered;
 
@@ -85,10 +88,6 @@ public class RabbitStockProperties {
    * <p>DLQ는 비즈니스적 개입이 필요한 메시지를 보관하며, 운영자가 Slack 알림 / 모니터링 시스템 등으로 확인할 수 있도록 활용된다.
    */
   private DecreaseDead decreaseDead;
-
-  // ---------------------------------------------------------------------
-  // Inner Classes: 각 항목별 Queue / Routing Key 설정
-  // ---------------------------------------------------------------------
 
   /**
    * 재고 등록 이벤트 관련 Queue / RoutingKey 설정이다.
