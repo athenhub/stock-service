@@ -15,8 +15,8 @@ import java.util.UUID;
  */
 public record ProductVariantMatchCommand(
 
-    /** 검증 대상 상품 ID. */
+    /* 검증 대상 상품 ID. */
     UUID productId,
 
-    /** 비교 대상 상품 옵션(Variant) ID 목록. */
+    /* 비교 대상 상품 옵션(Variant) ID 목록. */
     List<UUID> productVariantIds) {}

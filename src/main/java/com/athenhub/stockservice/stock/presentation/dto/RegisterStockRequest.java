@@ -19,13 +19,13 @@ import java.util.UUID;
  */
 public record RegisterStockRequest(
 
-    /** 재고를 등록할 허브 ID. */
+    /* 재고를 등록할 허브 ID. */
     UUID hubId,
 
-    /** 재고를 등록할 벤더 ID. */
+    /* 재고를 등록할 벤더 ID. */
     UUID vendorId,
 
-    /** 재고를 등록할 상품 ID. */
+    /* 재고를 등록할 상품 ID. */
     @NotNull UUID productId,
 
     /** 상품 옵션(Variant) 및 초기 재고 수량 목록. */

@@ -16,10 +16,10 @@ import java.util.UUID;
  */
 public record StockDecreaseSuccessEvent(
 
-    /** 재고 감소를 발생시킨 주문 ID. */
+    /* 재고 감소를 발생시킨 주문 ID. */
     UUID orderId,
 
-    /** 재고 감소가 완료된 시각. */
+    /* 재고 감소가 완료된 시각. */
     LocalDateTime decreasedAt) {
 
   /**

@@ -19,14 +19,14 @@ import java.util.UUID;
  */
 public record StockDecreaseRequest(
 
-    /** 재고를 감소시킬 상품 ID. */
+    /* 재고를 감소시킬 상품 ID. */
     @NotNull UUID productId,
 
-    /** 재고를 감소시킬 상품 옵션(Variant) ID. */
+    /* 재고를 감소시킬 상품 옵션(Variant) ID. */
     @NotNull UUID variantId,
 
-    /** 감소시킬 재고 수량 (1 이상). */
+    /* 감소시킬 재고 수량 (1 이상). */
     @Min(1) int quantity,
 
-    /** 재고 감소 요청이 발생한 시각. */
+    /* 재고 감소 요청이 발생한 시각. */
     @NotNull LocalDateTime requestAt) {}

@@ -27,7 +27,7 @@ public class RabbitStockDecreasedDeadEventListener {
   private final RabbitOrderProperties orderProperties;
   private final RabbitTemplate rabbitTemplate;
 
-  /** DLQ 메시지 헤더에서 실패 유형을 가져오기 위한 헤더 이름 */
+  /** DLQ 메시지 헤더에서 실패 유형을 가져오기 위한 헤더 이름. */
   private static final String ERROR_TYPE_HEADER_NAME = "x-error-type";
 
   private final MessageResolver messageResolver;
