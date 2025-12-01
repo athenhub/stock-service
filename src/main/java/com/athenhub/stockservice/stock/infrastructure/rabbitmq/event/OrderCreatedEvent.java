@@ -1,4 +1,4 @@
-package com.athenhub.stockservice.stock.infrastructure.rabbitmq.subcribe.order;
+package com.athenhub.stockservice.stock.infrastructure.rabbitmq.event;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,13 +17,13 @@ import java.util.UUID;
  */
 public record OrderCreatedEvent(
 
-    /** 생성된 주문 ID. */
+    /* 생성된 주문 ID. */
     UUID orderId,
 
-    /** 주문에 포함된 상품 및 옵션 목록. */
+    /* 주문에 포함된 상품 및 옵션 목록. */
     List<OrderedProduct> products,
 
-    /** 주문이 생성된 시각. */
+    /* 주문이 생성된 시각. */
     LocalDateTime orderedAt) {
 
   /**
@@ -39,12 +39,12 @@ public record OrderCreatedEvent(
    */
   public record OrderedProduct(
 
-      /** 주문된 상품 ID. */
+      /* 주문된 상품 ID. */
       UUID productId,
 
-      /** 주문된 상품 옵션(Variant) ID. */
+      /* 주문된 상품 옵션(Variant) ID. */
       UUID variantId,
 
-      /** 주문 수량. */
+      /* 주문 수량. */
       int quantity) {}
 }

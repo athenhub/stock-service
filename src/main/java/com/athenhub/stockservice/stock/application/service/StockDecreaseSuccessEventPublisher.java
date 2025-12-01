@@ -1,6 +1,6 @@
 package com.athenhub.stockservice.stock.application.service;
 
-import com.athenhub.stockservice.stock.domain.event.external.StockDecreasedEvent;
+import com.athenhub.stockservice.stock.application.event.external.StockDecreaseSuccessEvent;
 
 /**
  * 재고 감소 이벤트를 발행하는 Publisher 인터페이스이다.
@@ -12,7 +12,7 @@ import com.athenhub.stockservice.stock.domain.event.external.StockDecreasedEvent
  * @author 김지원
  * @since 1.0.0
  */
-public interface StockDecreasedEventPublisher {
+public interface StockDecreaseSuccessEventPublisher {
 
   /**
    * 재고 감소 이벤트를 발행한다.
@@ -21,5 +21,5 @@ public interface StockDecreasedEventPublisher {
    * @author 김지원
    * @since 1.0.0
    */
-  void publish(StockDecreasedEvent event);
+  void publish(StockDecreaseSuccessEvent event);
 }

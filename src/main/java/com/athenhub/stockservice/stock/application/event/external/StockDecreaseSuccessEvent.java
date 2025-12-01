@@ -1,4 +1,4 @@
-package com.athenhub.stockservice.stock.domain.event.external;
+package com.athenhub.stockservice.stock.application.event.external;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -14,12 +14,12 @@ import java.util.UUID;
  * @author 김지원
  * @since 1.0.0
  */
-public record StockDecreasedEvent(
+public record StockDecreaseSuccessEvent(
 
-    /** 재고 감소를 발생시킨 주문 ID. */
+    /* 재고 감소를 발생시킨 주문 ID. */
     UUID orderId,
 
-    /** 재고 감소가 완료된 시각. */
+    /* 재고 감소가 완료된 시각. */
     LocalDateTime decreasedAt) {
 
   /**
@@ -30,7 +30,7 @@ public record StockDecreasedEvent(
    * @author 김지원
    * @since 1.0.0
    */
-  public static StockDecreasedEvent of(UUID orderId) {
-    return new StockDecreasedEvent(orderId, LocalDateTime.now());
+  public static StockDecreaseSuccessEvent of(UUID orderId) {
+    return new StockDecreaseSuccessEvent(orderId, LocalDateTime.now());
   }
 }

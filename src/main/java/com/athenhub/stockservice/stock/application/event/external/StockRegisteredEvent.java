@@ -1,4 +1,4 @@
-package com.athenhub.stockservice.stock.domain.event.external;
+package com.athenhub.stockservice.stock.application.event.external;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

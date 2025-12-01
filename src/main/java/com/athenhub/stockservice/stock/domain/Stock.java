@@ -1,7 +1,9 @@
 package com.athenhub.stockservice.stock.domain;
 
+import com.athenhub.commoncore.error.GlobalErrorCode;
 import com.athenhub.stockservice.global.domain.AbstractTimeEntity;
 import com.athenhub.stockservice.stock.domain.dto.InitialStock;
+import com.athenhub.stockservice.stock.domain.exception.InsufficientStockException;
 import com.athenhub.stockservice.stock.domain.vo.ProductId;
 import com.athenhub.stockservice.stock.domain.vo.ProductVariantId;
 import com.athenhub.stockservice.stock.domain.vo.StockId;
@@ -161,7 +163,7 @@ public class Stock extends AbstractTimeEntity {
    */
   private void validateStockAvailability(int amount) {
     if (this.quantity < amount) {
-      throw new IllegalStateException("재고가 부족합니다.");
+      throw new InsufficientStockException(GlobalErrorCode.BAD_REQUEST, "재고가 부족합니다.");
     }
   }
 

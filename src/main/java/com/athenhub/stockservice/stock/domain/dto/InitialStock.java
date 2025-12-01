@@ -15,11 +15,11 @@ import java.util.UUID;
  */
 public record InitialStock(
 
-    /** 재고를 등록할 상품 ID. */
+    /* 재고를 등록할 상품 ID. */
     UUID productId,
 
-    /** 재고를 등록할 상품 옵션(Variant) ID. */
+    /* 재고를 등록할 상품 옵션(Variant) ID. */
     UUID variantId,
 
-    /** 초기 재고 수량. */
+    /* 초기 재고 수량. */
     int quantity) {}

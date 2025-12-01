@@ -2,12 +2,12 @@ package com.athenhub.stockservice.stock.application.service;
 
 import com.athenhub.stockservice.stock.application.dto.RegisterResponse;
 import com.athenhub.stockservice.stock.application.dto.StockInitializeCommand;
+import com.athenhub.stockservice.stock.application.event.external.StockRegisteredEvent;
 import com.athenhub.stockservice.stock.application.exception.ApplicationErrorCode;
 import com.athenhub.stockservice.stock.application.exception.StockApplicationException;
 import com.athenhub.stockservice.stock.domain.Stock;
 import com.athenhub.stockservice.stock.domain.StockHistory;
 import com.athenhub.stockservice.stock.domain.dto.InitialStock;
-import com.athenhub.stockservice.stock.domain.event.external.StockRegisteredEvent;
 import com.athenhub.stockservice.stock.domain.repository.StockHistoryRepository;
 import com.athenhub.stockservice.stock.domain.repository.StockRepository;
 import java.util.List;

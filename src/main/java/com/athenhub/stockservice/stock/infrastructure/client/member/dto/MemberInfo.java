@@ -1,6 +1,5 @@
 package com.athenhub.stockservice.stock.infrastructure.client.member.dto;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
@@ -22,5 +21,4 @@ public record MemberInfo(
     String organizationName,
     MemberRole role,
     MemberStatus status,
-    boolean isActivated
-    ) {}
+    boolean isActivated) {}

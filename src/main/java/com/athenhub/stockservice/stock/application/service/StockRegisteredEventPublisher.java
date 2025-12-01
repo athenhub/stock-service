@@ -1,6 +1,6 @@
 package com.athenhub.stockservice.stock.application.service;
 
-import com.athenhub.stockservice.stock.domain.event.external.StockRegisteredEvent;
+import com.athenhub.stockservice.stock.application.event.external.StockRegisteredEvent;
 
 /**
  * 재고 등록 완료 이벤트를 발행하는 Publisher 인터페이스이다.

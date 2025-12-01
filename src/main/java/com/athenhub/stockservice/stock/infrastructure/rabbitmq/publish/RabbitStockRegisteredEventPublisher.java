@@ -1,7 +1,8 @@
 package com.athenhub.stockservice.stock.infrastructure.rabbitmq.publish;
 
+import com.athenhub.stockservice.stock.application.event.external.StockRegisteredEvent;
 import com.athenhub.stockservice.stock.application.service.StockRegisteredEventPublisher;
-import com.athenhub.stockservice.stock.domain.event.external.StockRegisteredEvent;
+import com.athenhub.stockservice.stock.infrastructure.rabbitmq.config.stock.RabbitStockProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
