@@ -1,150 +1,269 @@
-﻿# 재고 서비스 (Stock Service)
+﻿# 🏗️ AthenHub Stock Service
 
-## 개요(Overview)
+AthenHub Stock Service는 **재고 관리**, **재고 감소 처리**, **동시성 제어**,  
+**이벤트 기반 재고 처리(Saga Pattern)**, **RabbitMQ 메시지 기반 아키텍처**를 구현한  
+도메인 중심(DDD) 재고 서비스입니다.
 
-본 서비스는 Spring Boot 기반으로 구현된 **재고 관리 마이크로서비스**로, 다음과 같은 기술적 요구 사항을 충족하도록 설계되었습니다:
+재고 감소 요청을 안정적으로 처리하고, 실패 시 보상 트랜잭션을 자동 유도하며,  
+대규모 트래픽에서도 안정적인 처리를 목표로 설계되었습니다.
 
-- **낙관적 락(Optimistic Locking)** 기반 동시성 제어
-- **멱등성(Idempotency)** 보장
-- **RabbitMQ 기반 이벤트 드리븐 아키텍처**
-- **DDD(Domain-Driven Design)** 기반 도메인 모델링
+# 1. 📘 Overview
 
-## 아키텍처 구성(Architecture)
+AthenHub Stock Service는 다음 핵심 요구사항을 충족하도록 설계되었습니다.
 
-- `Stock`, `StockHistory` 중심의 **도메인 모델** 구성
-- 재고 엔티티에 `@Version`을 적용하여 **낙관적 락 기반의 동시성 제어**
-- 주문별 재고 감소 요청에 대해 **이력 기반 멱등성 보장**
-- RabbitMQ를 통한 **비동기 이벤트 발행/구독**
-- `OrderCreated` 이벤트 수신 → 재고 감소 처리 → `StockDecreased` 이벤트 발행
+- 재고 감소 로직에 대한 **낙관적 락(Optimistic Lock)** 기반 동시성 제어
+- **멱등성(Idempotency)** 보장 (중복 요청 방지)
+- RabbitMQ 기반 **재고 감소 성공/실패 이벤트 발행**
+- **Retry / DLQ 전략**을 통한 안정적인 메시지 처리
+- 주문 서비스(Order Service)와 연동된 **Saga 패턴** 구현
+- 재고 감소 이력 추적 (StockHistory)
+- DDD 기반 패키지 구조
 
-## 핵심 처리 흐름(Core Flow)
+# 2. 🏛 Architecture
 
-1. RabbitMQ 로부터 `OrderCreatedMessage` 수신
-2. 메시지를 `StockDecreaseRequest` 로 변환
-3. Service Layer 처리:
-    - 멱등성 검증(이미 처리된 주문인지 확인)
-    - 재고 엔티티 조회(+ Optimistic Lock Version 확인)
-    - 재고 차감
-    - 재고 이력 저장
-    - `StockDecreasedEvent` 발행
-4. 일시적 오류에 대해서 RabbitMQ 재시도 정책 적용
+## 📌 High-level Architecture
 
-## 기술적 구현 포인트(Technical Highlights)
-
-- **Optimistic Locking**
-    - JPA `@Version` 기반으로 재고 동시 감소 요청을 안전하게 처리
-- **멱등성 보장**
-    - `(orderId, productVariantId)` 를 유니크 키로 관리하여 중복 감소 차단
-- **RabbitMQ 이벤트 처리**
-    - `RabbitListener`, `RabbitTemplate` 기반의 이벤트 송/수신
-- **Feign Client**
-    - 상품 서비스/회원 서비스와의 통신 시 Custom ErrorDecoder 적용
-- **공통 에러 포맷 통합**
-    - `common-core` 의 `GlobalErrorCode` 기반 API 표준화
-- **테스트 전략**
-    - `SpringBootTest` + ApplicationEvents 를 활용한 도메인 이벤트 검증
-
-## DDD 아키텍처 도입 — 도메인 중심의 책임 분리
 ```
-stockservice/
-  ├── application/
-  │     ├── service/StockDecreaseService
-  │     ├── eventhandler/StockDecreaseHandler
-  │     └── dto/
-  ├── domain/
-  │     ├── Stock, StockHistory
-  │     ├── event/internal
-  │     └── repository/
-  ├── infrastructure/
-  │     ├── rabbitmq/
-  │     ├── client/product
-  │     └── client/member
-  └── StockServiceApplication.java
+ Order Service
+     │
+     │ OrderCreatedEvent
+     ▼
+ Stock Service
+ ├─ 재고 감소 처리(Optimistic Lock)
+ ├─ 멱등성 검사(History 존재 여부)
+ ├─ 성공 시 StockDecreaseSuccessEvent 발행
+ ├─ 실패 시 Retry → DLQ
+ └─ DLQ Listener → OrderProcessFailedEvent 발행
+     ▼
+ Order Service
+ └─ 보상 트랜잭션(주문 취소 등)
 ```
 
-1. domain 계층 — 순수한 비즈니스 규칙
+# 3. 📦 Package Structure
 
-- Stock, StockHistory 엔티티 중심
-- 재고 감소/검증 로직 등 비즈니스 규칙이 응용 계층에 노출되지 않도록 보호
-- 도메인 이벤트(StockDecreasedEvent)를 정의하여 상태 변화 자체를 모델링
-
-2. application 계층 — use-case 구현
-
-- StockDecreaseService, StockDecreaseHandler 등
-- 트랜잭션 단위 정의, 도메인 모델 조립, 외부 서비스(상품/회원) 활용
-- 도메인 계층은 외부 세상과의 연결 책임을 갖지 않음
-
-3. infrastructure 계층 — 외부 시스템 통신
-
-- RabbitMQ 메시징 처리
-- Feign Client 통한 상품/회원 서비스 호출
-- 외부 의존성 구현체만 존재하며, 비즈니스 로직 없음
-
-⭐ 도입 효과
-
-- 변경에 유연한 구조: 도메인 규칙 변화가 발생해도 인프라 코드와 격리됨
-- 테스트 용이성 향상: 비즈니스 로직을 mock 없는 순수 단위 테스트로 검증 가능
-- 이벤트 주도 확장 용이: 도메인 이벤트가 명확해지면서 서비스 간 연동 구조가 자연스럽게 확장됨
-- MSA 친화적 구조: 도메인이 서비스의 중심이 되기 때문에 확장 시 결합도가 낮음
-
-## 이벤트 흐름 상세(Event Flow)
-
-### OrderCreated → StockDecrease 처리
-
-- Listener: `OrderCreatedRabbitListener`
-- 메시지 → DTO 변환 → Handler 호출
-- Handler 내부 로직:
-  ```
-  decrease() {
-      load stock;
-      optimistic lock protect;
-      enforce idempotency;
-      save history;
-      publish StockDecreasedEvent;
-  }
-  ```
-
-### StockDecreasedEvent 발행
-
-- Topic Exchange 로 전파
-- Routing Key: `stock.decreased`
-- Payload 예:
-    - orderId
-    - productVariantId
-    - decreasedQuantity
-    - historyId
-
-## 에러 처리 전략(Error Handling Strategy)
-
-- `StockApplicationException` 기반 중앙 집중식 예외 처리
-- Feign 오류 → `ProductFeignErrorDecoder` 를 통해 도메인 예외로 변환
-- `GlobalErrorCode` 기반의 일관된 응답 포맷 유지
-
-## 테스트 전략(Testing Strategy)
-
-- ApplicationEvents 기반 Domain Event 검증
-- SpringBootTest 기반 통합 테스트 구성
-## RabbitMQ 큐 설정 설정(Configuration)
-
-### application.yml 예시
-
-```yaml
-rabbit:
-  stock:
-    exchange: stock.exchange
-    registered:
-      routing-key: stock.registered
-      queue: stock.registered.queue
-    decreased:
-      routing-key: stock.decreased
-      queue: stock.decreased.queue
-    decrease-fail:
-      routing-key: stock.decrease.fail
-      queue: stock.decreased.fail.queue
+```
+com.athenhub.stockservice
+ ├── application
+ │    ├── dto/                    → StockDecreaseBatchEvent, StockDecreaseRequest 등
+ │    ├── service/                → StockDecreaseHandler, EventPublisher 인터페이스
+ │    └── event/external/         → 성공/실패 외부 이벤트
+ │
+ ├── domain
+ │    ├── Stock, StockHistory
+ │    ├── vo(OrderId, ProductVariantId)
+ │    ├── exception/
+ │    └── repository/
+ │
+ ├── infrastructure
+ │    ├── rabbitmq
+ │    │     ├── publish/          → Rabbit Event Publish 구현체
+ │    │     ├── subscribe/        → 재고 감소 이벤트 Listener
+ │    │     ├── error/            → StockErrorType
+ │    │     └── config/           → RabbitMQ 설정
+ │    └── config/                 → 공통 MessageConverter
+ │
+ ├── api
+ │    └── controller … (필요시)
+ │
+ └── StockServiceApplication.java
 ```
 
-- 단순히 엔티티 종류나 기능별로 큐를 쪼갠 것이 아니라, **“어떤 비즈니스 이벤트가 발생했는가?”**를 중심축으로 큐 구조를 설계
+# 4. 🧱 Domain Model
 
-> stock.registered — 재고가 등록될 때 발생하는 이벤트 <br>
-> stock.decreased — 정상적으로 재고가 감소했을 때 발생하는 이벤트 <br>
-> stock.decrease.fail — 재고 감소가 실패했을 때 발행되는 보상/실패 이벤트
+### 📌 Stock
+
+- 개별 Variant(ProductVariant)의 재고 수량을 보유
+- `decrease(quantity)` 내부에서 비즈니스 규칙 검증
+- Optimistic Lock @Version 적용 가능
+
+### 📌 StockHistory
+
+- 모든 재고 감소 기록 저장
+- OrderId + VariantId + Quantity 조합으로 재고 흐름 추적
+- 멱등성 구현 핵심 요소 (`existsByOrderId`)
+
+### 📌 Value Objects
+
+- `OrderId`
+- `ProductVariantId`
+
+# 5. 🚦 Message Flow (RabbitMQ)
+
+## 📌 1) 재고 감소 처리 성공
+
+```
+OrderCreatedEvent
+      ▼
+StockDecreaseBatchEvent
+      ▼
+StockDecreaseHandler
+      ▼
+StockDecreaseSuccessEventPublisher
+      ▼
+RabbitMQ → decrease.success.routingKey
+```
+
+Order 서비스는 이 메시지를 수신해 다음 단계(예: 결제 요청)를 진행.
+
+## 📌 2) 재고 감소 처리 실패
+
+### ❗ 재고 부족 (OUT_OF_STOCK)
+
+→ 즉시 DLQ 이동 → OrderProcessFailedEvent 발행
+
+### ❗ Optimistic Lock 충돌
+
+→ RetryQueue로 재전송(N회) → 실패 시 DLQ 이동
+
+# 6. 🔁 Retry / DLQ Strategy
+
+**RetryManager**가 전체 흐름을 책임진다.
+
+### ✔ Retry 조건
+
+- `OptimisticLockException`
+- 일시적 DB Lock
+- 네트워크 문제
+
+### ✔ Retry 메시지 헤더
+
+```
+x-retry-count: 현재 재시도 횟수
+```
+
+### ✔ DLQ 메시지 헤더
+
+```
+x-retry-count
+x-error-type: OUT_OF_STOCK | RETRY_EXCEEDED | UNKNOWN_ERROR
+```
+
+### ✔ DLQ Listener
+
+DLQ 메시지를 기반으로 Order 서비스에 전달할  
+`OrderProcessFailedEvent`를 생성 후 발행.
+
+# 7. 🔐 Concurrency Control — Optimistic Lock
+
+### ✔ 왜 Optimistic Lock인가?
+
+- 재고 감소는 동시성이 극도로 많이 발생하는 구간
+- 비관적 락(Pessimistic Lock)은 성능 병목 발생
+- Optimistic Lock 충돌은 Retry를 통해 해결 가능
+
+Stock 엔티티 예:
+
+```java
+
+@Version
+private Long version;
+```
+
+# 8. 🔄 Idempotency Strategy
+
+중복된 주문 이벤트 처리 방지를 위해:
+
+### ✔ 멱등성 키: OrderId
+
+### ✔ 검증 로직
+
+```
+if (stockHistoryRepository.existsByOrderId(order))
+    return;
+```
+
+이미 처리한 주문이라면 재고 감소를 절대로 다시 하지 않음.
+
+# 9. 🧪 Event Publishing
+
+### ✔ 성공 이벤트
+
+`StockDecreaseSuccessEventPublisher` → RabbitStockDecreaseSuccessEventPublisher
+
+### ✔ 실패 이벤트
+
+`StockDecreaseFailedEventPublisher` → RabbitStockDecreaseFailedEventPublisher
+
+### ✔ DLQ 이벤트
+
+`OrderProcessFailedEvent`로 변환 후 Order 서비스 전달
+
+# 10. 🛠 Tech Stack
+
+| Layer             | Tech                |
+|-------------------|---------------------|
+| Language          | Java 21             |
+| Framework         | Spring Boot 3.x     |
+| Build             | Gradle              |
+| Messaging         | RabbitMQ            |
+| DB                | MySQL               |
+| ORM               | JPA/Hibernate       |
+| Architecture      | Hexagonal + DDD     |
+| Concurrency       | Optimistic Lock     |
+| Messaging Pattern | Saga / Event-driven |
+
+# 11. 📄 주요 기능 요약
+
+- 재고 감소 처리(단일/배치)
+- 재고 감소 이력 저장
+- 멱등성 처리
+- 재고 부족 감지
+- Retry / DLQ 메시지 관리
+- 재고 감소 성공/실패 이벤트 발행
+- Order 서비스와 Saga 연동
+- MessageConverter(Jackson) 기반 JSON 직렬화
+
+# 12. 📚 Development Guidelines
+
+- 모든 이벤트는 JSON 형태로 전송
+- 메시지 헤더는 표준 키 사용
+    - `x-retry-count`
+    - `x-error-type`
+- 메시지 객체는 반드시 record 기반 불변 구조 사용
+- Service Layer는 반드시 트랜잭션 단위로 처리
+- 도메인 규칙은 Entity/VO 내부에서 수행
+- 공통 예외는 AbstractServiceException 기반 확장
+
+# 13. 🔍 Diagram (Text Version)
+
+### 재고 감소 Saga 흐름
+
+```
+OrderCreatedEvent
+     ▼
+StockDecreaseBatchEvent Listener
+     ▼
+decreaseAll()
+     ├─ 멱등성 검사
+     ├─ 재고 감소 (Optimistic Lock)
+     ├─ StockHistory 저장
+     └─ 성공 이벤트 발행
+     ▼
+StockDecreaseSuccessEvent
+     ▼
+Order 서비스 소비 → 다음 단계 진행
+```
+
+### 실패 흐름
+
+```
+StockDecreaseHandler
+       ▼
+    Failure
+       ▼
+RetryManager
+  ├─ RetryQueue (N회)
+  └─ DLQ 이동
+       ▼
+DLQ Listener
+       ▼
+OrderProcessFailedEvent
+       ▼
+Order 서비스 보상 트랜잭션 실행
+```
+
+# ✨ Author
+
+**AthenHub Backend Developer — 김지원**  
+Stock 이벤트 처리, 재고 감소 트랜잭션, 메시징 아키텍처 담당
+
