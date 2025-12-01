@@ -50,7 +50,7 @@ public class RabbitStockDecreasedDeadEventListener {
       containerFactory = "manualAckFactory")
   public void listen(StockDecreaseBatchEvent event, Message message) {
     // 1) 실패 유형을 DLQ 메시지 헤더에서 추출
-    String errorType = (String) message.getMessageProperties().getHeader(ERROR_TYPE_HEADER_NAME);
+    String errorType = message.getMessageProperties().getHeader(ERROR_TYPE_HEADER_NAME);
 
     // 2) 실패 이벤트 생성 (e.g., 재고 부족, 낙관적 락 충돌 등)
     OrderProcessFailedEvent failedEvent =
